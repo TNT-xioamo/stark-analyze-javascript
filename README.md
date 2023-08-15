@@ -1,10 +1,4 @@
-# PostHog 浏览器 JS 库
-
-[![npm 包](https://img.shields.io/npm/v/posthog-js?style=flat-square)](https://www.npmjs.com/package/posthog-js)
-[![麻省理工学院许可证](https://img.shields.io/badge/License-MIT-red.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-
-有关在应用程序中使用此库的信息，[请参阅 PostHog 文档](https://posthog.com/docs/libraries/js)。
-本自述文件旨在用于开发库本身。
+# stark-analyze-javascript 浏览器 JS 库
 
 ## 测试
 
@@ -34,7 +28,7 @@ ID 为 11213 的项目。请参阅 testcafe 测试以了解如何覆盖这些 if
 
 ### 运行本地创建 React 应用程序示例
 
-您可以使用“playground/nextjs”中的 create React 应用程序设置来测试 posthog-js 作为 Nextjs 应用程序中的 npm 模块。
+您可以使用“playground/nextjs”中的 create React 应用程序设置来测试 stark-analyze-javascript 作为 Nextjs 应用程序中的 npm 模块。
 
 1. 在端口 8000 上本地运行 `posthog` (`DEBUG=1 TEST=1 ./bin/start`)。
 2. 在 posthog repo 上运行 `python manage.py setup_dev --no-data`，这会设置一个演示帐户。
@@ -49,13 +43,13 @@ ID 为 11213 的项目。请参阅 testcafe 测试以了解如何覆盖这些 if
 
 ## 与另一个项目一起开发
 
-安装 Yalc 以在另一个 JS 项目中链接本地版本的 `posthog-js`：`npm install -g yalc`
+安装 Yalc 以在另一个 JS 项目中链接本地版本的 `stark-analyze-javascript`：`npm install -g yalc`
 
 #### 运行此命令以链接本地版本
 
-- 在`posthog-js`目录中：`yalcpublish`
-- 在另一个目录中：`yalc add posthog-js`，然后安装依赖项
-   （对于“posthog”，这意味着：“yalc add posthog-js && pnpm i && pnpm copy-scripts”）
+- 在`stark-analyze-javascript`目录中：`yalcpublish`
+- 在另一个目录中：`yalc add stark-analyze-javascript`，然后安装依赖项
+   （对于“posthog”，这意味着：“yalc add stark-analyze-javascript && pnpm i && pnpm copy-scripts”）
 
 #### 运行此命令以更新链接的本地版本
 
@@ -64,26 +58,5 @@ ID 为 11213 的项目。请参阅 testcafe 测试以了解如何覆盖这些 if
 
 #### 运行此命令以取消本地版本的链接
 
-- 在另一个目录中：`yalc remove posthog-js`，然后安装依赖项
-   （对于“posthog”，这意味着：“yalc remove posthog-js && pnpm i && pnpm copy-scripts”）
-
-## 发布新版本
-
-只需在您的 PR 上贴上“凹凸补丁/次要/主要”标签即可！ PR 合并后，将发布具有适当版本提升的新版本，并且依赖项将在 [posthog/PostHog](https://github.com/posthog/PostHog) 中自动更新。
- 
-如果您想发布没有 PR 的新版本（例如，因为您忘记使用标签），请查看 `master` 分支并运行 `npm version [major | 次要| patch] && git push --tags` - 这将像标签一样触发自动发布过程。
-
-### 售前赛
-
-要发布 alpha 或 beta 版本，您需要在本地使用 CLI：
-
-1. 确保您是 npm 中 `posthog-js` 的协作者（[检查此处](https://www.npmjs.com/package/posthog-js)）。
-2. 确保您已登录 npm CLI（“npm login”）。
-3. 检查您正在进行的分支（不要从“master”发布 alpha/beta）。
-4. 使用与 PR 相同的凹凸级别（主要/次要/补丁）运行以下命令：
-     ````bash
-     npm 版本 [premajor | 初级| 预补丁] --preid=beta
-     npm 发布 --tag beta
-     git push --标签
-     ````
-5.享受新的预发布版本。 您现在可以在本地、虚拟应用程序或[主存储库](https://github.com/posthog/PostHog)中使用它。
+- 在另一个目录中：`yalc remove stark-analyze-javascript`，然后安装依赖项
+   （对于“posthog”，这意味着：“yalc remove stark-analyze-javascript && pnpm i && pnpm copy-scripts”）
