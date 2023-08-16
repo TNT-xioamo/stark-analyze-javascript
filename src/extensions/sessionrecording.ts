@@ -177,12 +177,6 @@ export class SessionRecording {
   }
 
   private _startCapture() {
-    // 根据 rrweb 文档，IE11 及以下版本不支持 rrweb：
-    // “rrweb 不支持 IE11 及以下版本，因为它使用这些浏览器支持的 MutationObserver API。”
-    // https://github.com/rrweb-io/rrweb/blob/master/guide.md#compatibility-note
-    // 然而，MutationObserver 确实存在于 IE11 上，它只是不能很好地工作并且不能检测所有更改。
-    // 相反，当我们加载“recorder.js”时，第一个 JS 错误是关于“Object.assign”未定义。
-    // 因此，我们不是寻找 MutationObserver，而是寻找这个函数，如果它未定义，则阻止记录。
     if (typeof Object.assign === 'undefined') {
       return
     }

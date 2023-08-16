@@ -171,7 +171,7 @@ export function errorToProperties([event, source, lineno, colno, error]: ErrorEv
     $exception_message: errorProperties.$exception_message || '',
     ...(source
       ? {
-          $exception_source: source, // TODO get this from URL if not present
+          $exception_source: source,
         }
       : {}),
     ...(lineno ? { $exception_lineno: lineno } : {}),
@@ -180,7 +180,6 @@ export function errorToProperties([event, source, lineno, colno, error]: ErrorEv
 }
 
 export function unhandledRejectionToProperties([ev]: [ev: PromiseRejectionEvent]): ErrorProperties {
-  // dig the object of the rejection out of known event types
   let error: unknown = ev
   try {
     if ('reason' in ev) {
@@ -188,9 +187,7 @@ export function unhandledRejectionToProperties([ev]: [ev: PromiseRejectionEvent]
     } else if ('detail' in ev && 'reason' in (ev as any).detail) {
       error = (ev as any).detail.reason
     }
-  } catch (_oO) {
-    // no-empty
-  }
+  } catch (_oO) {}
 
   let errorProperties: Omit<ErrorProperties, '$exception_type' | '$exception_message'> & {
     $exception_type?: string

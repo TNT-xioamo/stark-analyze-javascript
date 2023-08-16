@@ -49,7 +49,6 @@ const PERFORMANCE_EVENTS_MAPPING: { [key: string]: number } = {
   unloadEventEnd: 36,
   unloadEventStart: 37,
 
-  // Added after v1
   duration: 39,
   timestamp: 40,
 
@@ -155,7 +154,6 @@ export class WebPerformanceObserver {
 
   _capturePerformanceEvent(event: PerformanceEntry) {
     // NOTE: We don't want to capture our own request events.
-
     if (event.name.indexOf(this.instance.get_config('api_host')) === 0) {
       const path = event.name.replace(this.instance.get_config('api_host'), '')
 
@@ -206,14 +204,11 @@ export class WebPerformanceObserver {
     }
   }
 
-  /**
-   * :TRICKY: Make sure we batch these requests, and don't truncate the strings.
-   */
   private capturePerformanceEvent(properties: { [key: number]: any }) {
     const timestamp = properties[PERFORMANCE_EVENTS_MAPPING['timestamp']]
 
     this.instance.sessionRecording?.onRRwebEmit({
-      type: 6, // EventType.Plugin,
+      type: 6,
       data: {
         plugin: 'posthog/network@1',
         payload: properties,

@@ -88,19 +88,18 @@ const __NOOPTIONS = {}
 const PRIMARY_INSTANCE_NAME = 'posthog'
 
 /*
- * Dynamic... constants? Is that an oxymoron?
+ * 动态...常数？ 这是矛盾的吗？
  */
-// http://hacks.mozilla.org/2009/07/cross-site-xmlhttprequest-with-cors/
-// https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#withCredentials
 const USE_XHR = window.XMLHttpRequest && 'withCredentials' in new XMLHttpRequest()
 
-// IE<10 does not support cross-origin XHR's but script tags
-// with defer won't block window.onload; ENQUEUE_REQUESTS
-// should only be true for Opera<12
 let ENQUEUE_REQUESTS = !USE_XHR && userAgent.indexOf('MSIE') === -1 && userAgent.indexOf('Mozilla') === -1
+/**
+ * 埋点入口配置
+ * @returns
+ */
 
 const defaultConfig = (): PostHogConfig => ({
-  api_host: 'https://app.posthog.com',
+  api_host: '',
   api_method: 'POST',
   api_transport: 'XHR',
   ui_host: null,
@@ -164,12 +163,12 @@ const defaultConfig = (): PostHogConfig => ({
 })
 
 /**
- * create_phlib(token:string, config:object, name:string)
+ * create_phlib（令牌：字符串，配置：对象，名称：字符串）
  *
- * This function is used by the init method of PostHogLib objects
- * as well as the main initializer at the end of the JSLib (that
- * initializes document.posthog as well as any additional instances
- * declared before this file has loaded).
+ * 该函数由PostHogLib对象的init方法使用
+ * 以及 JSLib 末尾的主初始化程序（即
+ * 初始化 document.posthog 以及任何其他实例
+ * 在此文件加载之前声明）。
  */
 const create_phlib = function (
   token: string,
@@ -540,9 +539,9 @@ export class PostHog {
       this.capture('$pageview', { title: document.title }, { send_instantly: true })
     }
 
-    // Call decide to get what features are enabled and other settings.
-    // As a reminder, if the /decide endpoint is disabled, feature flags, toolbar, session recording, autocapture,
-    // and compression will not be available.
+    // 调用决定获取启用哪些功能以及其他设置。
+    // 提醒一下，如果 /decide 端点被禁用，功能标志、工具栏、会话记录、自动捕获,
+    // 并且压缩将不可用。
     if (!this.get_config('advanced_disable_decide')) {
       new Decide(this).call()
     }
@@ -1476,22 +1475,22 @@ export class PostHog {
   }
 
   /**
-   * Create an alias, which PostHog will use to link two distinct_ids going forward (not retroactively).
-   * Multiple aliases can map to the same original ID, but not vice-versa. Aliases can also be chained - the
-   * following is a valid scenario:
+   * 创建一个别名，PostHog 将使用该别名来链接两个不同的_id（而不是追溯）。
+   * 多个别名可以映射到同一个原始 ID，但反之则不然。 别名也可以被链接起来 -
+   * 以下是一个有效的场景：
    *
    *     posthog.alias('new_id', 'existing_id');
    *     ...
    *     posthog.alias('newer_id', 'new_id');
    *
-   * If the original ID is not passed in, we will use the current distinct_id - probably the auto-generated GUID.
+   * 如果原始 ID 未传入，将使用当前的 unique_id - 可能是自动生成的 GUID。
    *
    * ### Notes:
    *
-   * The best practice is to call alias() when a unique ID is first created for a user
-   * (e.g., when a user first registers for an account and provides an email address).
-   * alias() should never be called more than once for a given user, except to
-   * chain a newer ID to a previously new ID, as described above.
+   * 最佳实践是在首次为用户创建唯一 ID 时调用 alias()
+   *（例如，当用户首次注册帐户并提供电子邮件地址时）。
+   * 对于给定用户，alias() 不应被多次调用，除非
+   * 将较新的 ID 链接到之前的新 ID，如上所述。
    *
    * @param {String} alias A unique identifier that you want to use for this user in the future.
    * @param {String} [original] The current identifier being used for this user.
@@ -1689,7 +1688,7 @@ export class PostHog {
   }
 
   /**
-   * turns session recording on, and updates the config option
+   * 打开会话记录并更新配置选项
    * disable_session_recording to false
    */
   startSessionRecording(): void {
@@ -1697,7 +1696,7 @@ export class PostHog {
   }
 
   /**
-   * turns session recording off, and updates the config option
+   * 关闭会话记录并更新配置选项
    * disable_session_recording to true
    */
   stopSessionRecording(): void {
@@ -1705,7 +1704,7 @@ export class PostHog {
   }
 
   /**
-   * returns a boolean indicating whether session recording
+   * 返回一个布尔值，指示是否进行会话记录
    * is currently running
    */
   sessionRecordingStarted(): boolean {
@@ -1713,7 +1712,7 @@ export class PostHog {
   }
 
   /**
-   * returns a boolean indicating whether the toolbar loaded
+   * 返回一个布尔值，指示工具栏是否加载
    * @param toolbarParams
    */
 
@@ -1722,52 +1721,52 @@ export class PostHog {
   }
 
   /**
-   * returns the current config object for the library.
+   * 返回库的当前配置对象。
    */
   get_config<K extends keyof PostHogConfig>(prop_name: K): PostHogConfig[K] {
     return this.config?.[prop_name]
   }
 
   /**
-   * Returns the value of the super property named property_name. If no such
+   * 返回名为 property_name 的超级属性的值。 如果没有这样的
    * property is set, get_property() will return the undefined value.
    *
    * ### Notes:
    *
-   * get_property() can only be called after the PostHog library has finished loading.
+   * get_property() 只能在 PostHog 库加载完成后调用。
    * init() has a loaded function available to handle this automatically. For example:
    *
-   *     // grab value for '$user_id' after the posthog library has loaded
+   *     // posthog 库加载后获取“$user_id”的值
    *     posthog.init('YOUR PROJECT TOKEN', {
    *         loaded: function(posthog) {
    *             user_id = posthog.get_property('$user_id');
    *         }
    *     });
    *
-   * @param {String} property_name The name of the super property you want to retrieve
+   * @param {String} property_name 您要检索的超级属性的名称
    */
   get_property(property_name: string): Property | undefined {
     return this.persistence['props'][property_name]
   }
 
   /**
-   * Returns the value of the session super property named property_name. If no such
-   * property is set, getSessionProperty() will return the undefined value.
+   * 返回名为 property_name 的会话超级属性的值。 如果没有这样的
+   * 设置属性后，getSessionProperty() 将返回未定义的值。
    *
    * ### Notes:
    *
-   * This is based on browser-level `sessionStorage`, NOT the PostHog session.
-   * getSessionProperty() can only be called after the PostHog library has finished loading.
-   * init() has a loaded function available to handle this automatically. For example:
+   * 这是基于浏览器级别的“sessionStorage”，而不是 PostHog 会话。
+   * getSessionProperty() 只能在 PostHog 库加载完成后调用。
+   * init() 有一个加载函数可以自动处理这个问题。 例如：
    *
-   *     // grab value for 'user_id' after the posthog library has loaded
+   *     // posthog 库加载后获取“user_id”的值
    *     posthog.init('YOUR PROJECT TOKEN', {
    *         loaded: function(posthog) {
    *             user_id = posthog.getSessionProperty('user_id');
    *         }
    *     });
    *
-   * @param {String} property_name The name of the session super property you want to retrieve
+   * @param {String} property_name 您要检索的会话超级属性的名称
    */
   getSessionProperty(property_name: string): Property | undefined {
     return this.sessionPersistence['props'][property_name]
@@ -1781,7 +1780,7 @@ export class PostHog {
     return name
   }
 
-  // perform some housekeeping around GDPR opt-in/out state
+  // 围绕 GDPR 选择加入/退出状态执行一些内务管理
   _gdpr_init(): void {
     const is_localStorage_requested = this.get_config('opt_out_capturing_persistence_type') === 'localStorage'
 
@@ -1799,13 +1798,13 @@ export class PostHog {
       })
     }
 
-    // check whether the user has already opted out - if so, clear & disable persistence
+    // 检查用户是否已经选择退出 - 如果是，则清除并禁用持久性
     if (this.has_opted_out_capturing()) {
       this._gdpr_update_persistence({ clear_persistence: true })
 
-      // check whether we should opt out by default
-      // note: we don't clear persistence here by default since opt-out default state is often
-      //       used as an initial state while GDPR information is being collected
+      // 检查我们是否应该默认选择退出
+      // 注意：默认情况下，我们不会清除此处的持久性，因为选择退出默认状态通常是
+      //       在收集 GDPR 信息时用作初始状态
     } else if (
       !this.has_opted_in_capturing() &&
       (this.get_config('opt_out_capturing_by_default') || cookieStore.get('ph_optout'))
@@ -1818,10 +1817,10 @@ export class PostHog {
   }
 
   /**
-   * Enable or disable persistence based on options
-   * only enable/disable if persistence is not already in this state
-   * @param {boolean} [options.clear_persistence] If true, will delete all data stored by the sdk in persistence and disable it
-   * @param {boolean} [options.enable_persistence] If true, will re-enable sdk persistence
+   * 根据选项启用或禁用持久性
+   * 仅当持久性尚未处于此状态时才启用/禁用
+   * @param {boolean} [options.clear_persistence] 如果为 true，将删除 sdk 持久存储的所有数据并禁用它
+   * @param {boolean} [options.enable_persistence] 如果为 true，将重新启用 sdk 持久性
    */
   _gdpr_update_persistence(options: Partial<OptInOutCapturingOptions>): void {
     let disabled
@@ -1841,7 +1840,7 @@ export class PostHog {
     }
   }
 
-  // call a base gdpr function after constructing the appropriate token and options args
+  // 构造适当的令牌和选项参数后调用基本 gdpr 函数
   _gdpr_call_func<R = any>(
     func: (token: string, options: GDPROptions) => R,
     options?: Partial<OptInOutCapturingOptions>
@@ -1858,7 +1857,7 @@ export class PostHog {
       options || {}
     )
 
-    // check if localStorage can be used for recording opt out status, fall back to cookie if not
+    // 检查 localStorage 是否可用于记录选择退出状态，如果不能，则回退到 cookie
     if (!localStore.is_supported() && options['persistence_type'] === 'localStorage') {
       options['persistence_type'] = 'cookie'
     }
@@ -1876,7 +1875,7 @@ export class PostHog {
   }
 
   /**
-   * Opt the user in to data capturing and cookies/localstorage for this PostHog instance
+   * 选择用户参与此 PostHog 实例的数据捕获和 cookie/本地存储
    *
    * ### Usage
    *
@@ -1893,16 +1892,16 @@ export class PostHog {
    *         secure_cookie: true
    *     });
    *
-   * @param {Object} [options] A dictionary of config options to override
-   * @param {function} [options.capture] Function used for capturing a PostHog event to record the opt-in action (default is this PostHog instance's capture method)
-   * @param {string} [options.capture_event_name=$opt_in] Event name to be used for capturing the opt-in action
-   * @param {Object} [options.capture_properties] Set of properties to be captured along with the opt-in action
-   * @param {boolean} [options.enable_persistence=true] If true, will re-enable sdk persistence
-   * @param {string} [options.persistence_type=localStorage] Persistence mechanism used - cookie or localStorage - falls back to cookie if localStorage is unavailable
-   * @param {string} [options.cookie_prefix=__ph_opt_in_out] Custom prefix to be used in the cookie/localstorage name
-   * @param {Number} [options.cookie_expiration] Number of days until the opt-in cookie expires (overrides value specified in this PostHog instance's config)
-   * @param {boolean} [options.cross_subdomain_cookie] Whether the opt-in cookie is set as cross-subdomain or not (overrides value specified in this PostHog instance's config)
-   * @param {boolean} [options.secure_cookie] Whether the opt-in cookie is set as secure or not (overrides value specified in this PostHog instance's config)
+   * @param {Object} [options] 要覆盖的配置选项字典
+   * @param {function} [options.capture] 用于捕获 PostHog 事件以记录选择加入操作的函数（默认是此 PostHog 实例的捕获方法）
+   * @param {string} [options.capture_event_name=$opt_in] 用于捕获选择加入操作的事件名称
+   * @param {Object} [options.capture_properties] 随选择加入操作一起捕获的属性集
+   * @param {boolean} [options.enable_persistence=true] 如果为 true，将重新启用 sdk 持久性
+   * @param {string} [options.persistence_type=localStorage] 使用的持久性机制 - cookie 或 localStorage - 如果 localStorage 不可用，则回退到 cookie
+   * @param {string} [options.cookie_prefix=__ph_opt_in_out] 在 cookie/localstorage 名称中使用的自定义前缀
+   * @param {Number} [options.cookie_expiration] 选择加入 cookie 过期之前的天数（覆盖此 PostHog 实例配置中指定的值）
+   * @param {boolean} [options.cross_subdomain_cookie] 选择加入 cookie 是否设置为跨子域（覆盖此 PostHog 实例配置中指定的值）
+   * @param {boolean} [options.secure_cookie] 选择加入 cookie 是否设置为安全（覆盖此 PostHog 实例配置中指定的值）
    */
   opt_in_capturing(options?: Partial<OptInOutCapturingOptions>): void {
     options = _extend(
@@ -1917,7 +1916,7 @@ export class PostHog {
   }
 
   /**
-   * Opt the user out of data capturing and cookies/localstorage for this PostHog instance
+   * 选择用户退出此 PostHog 实例的数据捕获和 cookie/本地存储
    *
    * ### Usage
    *
@@ -1930,13 +1929,13 @@ export class PostHog {
    *         secure_cookie: true
    *     });
    *
-   * @param {Object} [options] A dictionary of config options to override
-   * @param {boolean} [options.clear_persistence=true] If true, will delete all data stored by the sdk in persistence
-   * @param {string} [options.persistence_type=localStorage] Persistence mechanism used - cookie or localStorage - falls back to cookie if localStorage is unavailable
-   * @param {string} [options.cookie_prefix=__ph_opt_in_out] Custom prefix to be used in the cookie/localstorage name
-   * @param {Number} [options.cookie_expiration] Number of days until the opt-in cookie expires (overrides value specified in this PostHog instance's config)
-   * @param {boolean} [options.cross_subdomain_cookie] Whether the opt-in cookie is set as cross-subdomain or not (overrides value specified in this PostHog instance's config)
-   * @param {boolean} [options.secure_cookie] Whether the opt-in cookie is set as secure or not (overrides value specified in this PostHog instance's config)
+   * @param {Object} [options] 要覆盖的配置选项字典
+   * @param {boolean} [options.clear_persistence=true] 如果为 true，将删除 sdk 持久存储的所有数据
+   * @param {string} [options.persistence_type=localStorage] 使用的持久性机制 - cookie 或 localStorage - 如果 localStorage 不可用，则回退到 cookie
+   * @param {string} [options.cookie_prefix=__ph_opt_in_out] 在 cookie/localstorage 名称中使用的自定义前缀
+   * @param {Number} [options.cookie_expiration] 选择加入 cookie 过期之前的天数（覆盖此 PostHog 实例配置中指定的值）
+   * @param {boolean} [options.cross_subdomain_cookie] 选择加入 cookie 是否设置为跨子域（覆盖此 PostHog 实例配置中指定的值）
+   * @param {boolean} [options.secure_cookie] 选择加入 cookie 是否设置为安全（覆盖此 PostHog 实例配置中指定的值）
    */
   opt_out_capturing(options?: Partial<OptInOutCapturingOptions>): void {
     const _options = _extend(
@@ -1951,16 +1950,16 @@ export class PostHog {
   }
 
   /**
-   * Check whether the user has opted in to data capturing and cookies/localstorage for this PostHog instance
+   * 检查用户是否已选择此 PostHog 实例的数据捕获和 cookies/localstorage
    *
    * ### Usage
    *
    *     const has_opted_in = posthog.has_opted_in_capturing();
    *     // use has_opted_in value
    *
-   * @param {Object} [options] A dictionary of config options to override
-   * @param {string} [options.persistence_type=localStorage] Persistence mechanism used - cookie or localStorage - falls back to cookie if localStorage is unavailable
-   * @param {string} [options.cookie_prefix=__ph_opt_in_out] Custom prefix to be used in the cookie/localstorage name
+   * @param {Object} [options] 要覆盖的配置选项字典
+   * @param {string} [options.persistence_type=localStorage] 使用的持久性机制 - cookie 或 localStorage - 如果 localStorage 不可用，则回退到 cookie
+   * @param {string} [options.cookie_prefix=__ph_opt_in_out] 在 cookie/localstorage 名称中使用的自定义前缀
    * @returns {boolean} current opt-in status
    */
   has_opted_in_capturing(options?: Partial<OptInOutCapturingOptions>): boolean {
@@ -1968,24 +1967,24 @@ export class PostHog {
   }
 
   /**
-   * Check whether the user has opted out of data capturing and cookies/localstorage for this PostHog instance
+   * 检查用户是否已选择退出此 PostHog 实例的数据捕获和 cookie/本地存储
    *
    * ### Usage
    *
    *     const has_opted_out = posthog.has_opted_out_capturing();
    *     // use has_opted_out value
    *
-   * @param {Object} [options] A dictionary of config options to override
-   * @param {string} [options.persistence_type=localStorage] Persistence mechanism used - cookie or localStorage - falls back to cookie if localStorage is unavailable
-   * @param {string} [options.cookie_prefix=__ph_opt_in_out] Custom prefix to be used in the cookie/localstorage name
-   * @returns {boolean} current opt-out status
+   * @param {Object} [options] 要覆盖的配置选项字典
+   * @param {string} [options.persistence_type=localStorage] 使用的持久性机制 - cookie 或 localStorage - 如果 localStorage 不可用，则回退到 cookie
+   * @param {string} [options.cookie_prefix=__ph_opt_in_out] 在 cookie/localstorage 名称中使用的自定义前缀
+   * @returns {boolean} 当前选择退出状态
    */
   has_opted_out_capturing(options?: Partial<OptInOutCapturingOptions>): boolean {
     return this._gdpr_call_func(hasOptedOut, options)
   }
 
   /**
-   * Clear the user's opt in/out status of data capturing and cookies/localstorage for this PostHog instance
+   * 清除此 PostHog 实例的用户选择加入/退出数据捕获和 cookie/本地存储的状态
    *
    * ### Usage
    *
@@ -1999,13 +1998,13 @@ export class PostHog {
    *         secure_cookie: true
    *     });
    *
-   * @param {Object} [options] A dictionary of config options to override
-   * @param {boolean} [options.enable_persistence=true] If true, will re-enable sdk persistence
-   * @param {string} [options.persistence_type=localStorage] Persistence mechanism used - cookie or localStorage - falls back to cookie if localStorage is unavailable
-   * @param {string} [options.cookie_prefix=__ph_opt_in_out] Custom prefix to be used in the cookie/localstorage name
-   * @param {Number} [options.cookie_expiration] Number of days until the opt-in cookie expires (overrides value specified in this PostHog instance's config)
-   * @param {boolean} [options.cross_subdomain_cookie] Whether the opt-in cookie is set as cross-subdomain or not (overrides value specified in this PostHog instance's config)
-   * @param {boolean} [options.secure_cookie] Whether the opt-in cookie is set as secure or not (overrides value specified in this PostHog instance's config)
+   * @param {Object} [options] 要覆盖的配置选项字典
+   * @param {boolean} [options.enable_persistence=true] 如果为 true，将重新启用 sdk 持久性
+   * @param {string} [options.persistence_type=localStorage] 使用的持久性机制 - cookie 或 localStorage - 如果 localStorage 不可用，则回退到 cookie
+   * @param {string} [options.cookie_prefix=__ph_opt_in_out] 在 cookie/localstorage 名称中使用的自定义前缀
+   * @param {Number} [options.cookie_expiration] 选择加入 cookie 过期之前的天数（覆盖此 PostHog 实例配置中指定的值）
+   * @param {boolean} [options.cross_subdomain_cookie] 选择加入 cookie 是否设置为跨子域（覆盖此 PostHog 实例配置中指定的值）
+   * @param {boolean} [options.secure_cookie] 选择加入 cookie 是否设置为安全（覆盖此 PostHog 实例配置中指定的值）
    */
   clear_opt_in_out_capturing(options?: Partial<OptInOutCapturingOptions>): void {
     const _options: Partial<OptInOutCapturingOptions> = _extend(
@@ -2046,8 +2045,8 @@ const extend_mp = function () {
 }
 
 const override_ph_init_func = function () {
-  // we override the snippets init function to handle the case where a
-  // user initializes the posthog library after the script loads & runs
+  // 我们重写代码片段初始化函数来处理以下情况：
+  // 用户在脚本加载和运行后初始化 posthog 库
   posthog_master['init'] = function (token?: string, config?: Partial<PostHogConfig>, name?: string) {
     if (name) {
       // initialize a sub library
@@ -2084,9 +2083,9 @@ const override_ph_init_func = function () {
 }
 
 const add_dom_loaded_handler = function () {
-  // Cross browser DOM Loaded support
+  // 跨浏览器 DOM 加载支持
   function dom_loaded_handler() {
-    // function flag since we only want to execute this once
+    // 函数标志，因为只执行一次
     if ((dom_loaded_handler as any).done) {
       return
     }
@@ -2101,17 +2100,17 @@ const add_dom_loaded_handler = function () {
 
   if (document.addEventListener) {
     if (document.readyState === 'complete') {
-      // safari 4 can fire the DOMContentLoaded event before loading all
-      // external JS (including this file). you will see some copypasta
-      // on the internet that checks for 'complete' and 'loaded', but
-      // 'loaded' is an IE thing
+      // safari 4 可以在加载所有内容之前触发 DOMContentLoaded 事件
+      // 外部JS（包括这个文件）。 你会看到一些copypasta
+      // 在互联网上检查“完整”和“已加载”，但是
+      // “已加载” IE 浏览器事件
       dom_loaded_handler()
     } else {
       document.addEventListener('DOMContentLoaded', dom_loaded_handler, false)
     }
   }
 
-  // fallback handler, always will work
+  // 后备处理程序，始终有效
   _register_event(window, 'load', dom_loaded_handler, true)
 }
 
@@ -2123,12 +2122,12 @@ export function init_from_snippet(): void {
   posthog_master = (window as any).posthog
 
   if (posthog_master['__loaded'] || (posthog_master['config'] && posthog_master['persistence'])) {
-    // lib has already been loaded at least once; we don't want to override the global object this time so bomb early
+    // lib 已至少加载一次； 这次我们不想覆盖全局对象，所以尽早轰炸
     console.error('PostHog library has already been downloaded at least once.')
     return
   }
 
-  // Load instances of the PostHog Library
+  // 加载 PostHog 库的实例
   _each(posthog_master['_i'], function (item: [token: string, config: Partial<PostHogConfig>, name: string]) {
     if (item && _isArray(item)) {
       instances[item[2]] = create_phlib(...item)
@@ -2138,7 +2137,7 @@ export function init_from_snippet(): void {
   override_ph_init_func()
   ;(posthog_master['init'] as any)()
 
-  // Fire loaded events after updating the window's posthog object
+  // 更新窗口的 posthog 对象后触发加载事件
   _each(instances, function (instance) {
     instance._loaded()
   })

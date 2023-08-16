@@ -183,6 +183,7 @@ export class PostHogFeatureFlags {
 
     const encoded_data = _base64Encode(json_data)
     this.instance._send_request(
+      // 请求地址
       this.instance.get_config('api_host') + '/decide/?v=3',
       { data: encoded_data },
       { method: 'POST' },

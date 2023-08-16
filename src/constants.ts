@@ -1,10 +1,3 @@
-/*
- * Constants
- */
-
-/* PROPERTY KEYS */
-
-// This key is deprecated, but we want to check for it to see whether aliasing is allowed.
 export const PEOPLE_DISTINCT_ID_KEY = '$people_distinct_id'
 export const DISTINCT_ID = 'distinct_id'
 export const ALIAS_ID_KEY = '__alias'
@@ -24,7 +17,6 @@ export const FLAG_CALL_REPORTED = '$flag_call_reported'
 export const USER_STATE = '$user_state'
 export const POSTHOG_QUOTA_LIMITED = '$posthog_quota_limited'
 
-// These are propertties that are reserved and will not be automatically included in events
 export const PERSISTENCE_RESERVED_PROPERTIES = [
   PEOPLE_DISTINCT_ID_KEY,
   ALIAS_ID_KEY,

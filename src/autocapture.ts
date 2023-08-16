@@ -161,7 +161,6 @@ const autocapture = {
   },
 
   _getEventTarget: function (e: Event): Element | null {
-    // https://developer.mozilla.org/en-US/docs/Web/API/Event/target#Compatibility_notes
     if (typeof e.target === 'undefined') {
       return (e.srcElement as Element) || null
     } else {
@@ -173,10 +172,8 @@ const autocapture = {
   },
 
   _captureEvent: function (e: Event, instance: PostHog, eventName = '$autocapture'): boolean | void {
-    /*** Don't mess with this code without running IE8 tests on it ***/
     let target = this._getEventTarget(e)
     if (isTextNode(target)) {
-      // defeat Safari bug (see: http://www.quirksmode.org/js/events_properties.html)
       target = (target.parentNode || null) as Element | null
     }
 
@@ -206,14 +203,11 @@ const autocapture = {
       _each(targetElementList, (el) => {
         const shouldCaptureEl = shouldCaptureElement(el)
 
-        // if the element or a parent element is an anchor tag
-        // include the href as a property
         if (el.tagName.toLowerCase() === 'a') {
           href = el.getAttribute('href')
           href = shouldCaptureEl && shouldCaptureValue(href) && href
         }
 
-        // allow users to programmatically prevent capturing of elements by adding class 'ph-no-capture'
         const classes = getClassName(el).split(' ')
         if (_includes(classes, 'ph-no-capture')) {
           explicitNoCapture = true
@@ -232,8 +226,6 @@ const autocapture = {
       })
 
       if (!instance.get_config('mask_all_text')) {
-        // if the element is a button or anchor tag get the span text from any
-        // children and include it as/with the text property on the parent element
         if (target.tagName.toLowerCase() === 'a' || target.tagName.toLowerCase() === 'button') {
           elementsJson[0]['$el_text'] = getDirectAndNestedSpanText(target)
         } else {
@@ -263,8 +255,6 @@ const autocapture = {
     }
   },
 
-  // only reason is to stub for unit tests
-  // since you can't override window.location props
   _navigate: function (href: string): void {
     window.location.href = href
   },
@@ -288,7 +278,6 @@ const autocapture = {
       this.config = instance.__autocapture
     }
 
-    // precompile the regex
     if (this.config?.url_allowlist) {
       this.config.url_allowlist = this.config.url_allowlist.map((url) => new RegExp(url))
     }
@@ -308,7 +297,6 @@ const autocapture = {
         [AUTOCAPTURE_DISABLED_SERVER_SIDE]: !!response['autocapture_opt_out'],
       })
     }
-    // store this in-memory incase persistence is disabled
     this._isDisabledServerSide = !!response['autocapture_opt_out']
 
     this._setIsAutocaptureEnabled(instance)
@@ -321,7 +309,6 @@ const autocapture = {
       response['config']['enable_collect_everything'] &&
       this._isAutocaptureEnabled
     ) {
-      // TODO: delete custom_properties after changeless typescript refactor
       if (response['custom_properties']) {
         this._customProperties = response['custom_properties']
       }
@@ -331,11 +318,6 @@ const autocapture = {
     }
   },
 
-  // this is a mechanism to ramp up CE with no server-side interaction.
-  // when CE is active, every page load results in a decide request. we
-  // need to gently ramp this up so we don't overload decide. this decides
-  // deterministically if CE is enabled for this project by modding the char
-  // value of the project token.
   enabledForProject: function (
     token: string | null | undefined,
     numBuckets: number,

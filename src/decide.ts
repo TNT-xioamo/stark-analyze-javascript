@@ -9,14 +9,13 @@ export class Decide {
 
   constructor(instance: PostHog) {
     this.instance = instance
-    // don't need to wait for `decide` to return if flags were provided on initialisation
     this.instance.decideEndpointWasHit = this.instance._hasBootstrappedFeatureFlags()
   }
 
   call(): void {
     /*
-        Calls /decide endpoint to fetch options for autocapture, session recording, feature flags & compression.
-        */
+      调用 /decide 端点来获取自动捕获、会话记录、功能标志和压缩选项。
+    */
     const json_data = JSON.stringify({
       token: this.instance.get_config('token'),
       distinct_id: this.instance.get_distinct_id(),
@@ -29,8 +28,11 @@ export class Decide {
         undefined,
     })
 
-    const encoded_data = _base64Encode(json_data)
+    // const encoded_data = _base64Encode(json_data)
+    const encoded_data = json_data
+    console.error('encoded_data', encoded_data)
     this.instance._send_request(
+      // 请求地址
       `${this.instance.get_config('api_host')}/decide/?v=3`,
       { data: encoded_data, verbose: true },
       { method: 'POST' },
