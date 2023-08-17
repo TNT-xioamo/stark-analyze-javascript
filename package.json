@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "yarn build-rollup -w",
-    "build": "yarn build-rollup && yarn build-react",
+    "build": "yarn build-rollup",
     "build-rollup": "rm -rf lib && tsc -b && rollup -c",
     "build-react": "cd react; yarn; yarn build;",
     "lint": "eslint src",

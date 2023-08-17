@@ -143,7 +143,7 @@ function _hasDoNotTrackFlagOn(options: GDPROptions) {
     let hasDntOn = false
     _each(
       [
-        nav['doNotTrack'], // standard
+        nav['doNotTrack'], // 标
         (nav as any)['msDoNotTrack'],
         (win as any)['doNotTrack'],
       ],

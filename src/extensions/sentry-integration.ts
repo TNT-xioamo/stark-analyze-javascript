@@ -42,7 +42,8 @@ export class SentryIntegration implements _SentryIntegration {
   ) => void
 
   constructor(_posthog: PostHog, organization?: string, projectId?: number, prefix?: string) {
-    this.name = 'posthog-js'
+    console.log('哨兵', 'https://sentry.io/organizations')
+    this.name = 'stark-js'
     this.setupOnce = function (addGlobalEventProcessor: (callback: _SentryEventProcessor) => void) {
       addGlobalEventProcessor((event: _SentryEvent) => {
         if (event.level !== 'error' || !_posthog.__loaded) return event
