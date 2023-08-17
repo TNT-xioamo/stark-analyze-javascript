@@ -28,7 +28,8 @@ import { clearOptInOut, hasOptedIn, hasOptedOut, optIn, optOut, userOptedOut } f
 import { cookieStore, localStore } from './storage'
 import { RequestQueue } from './request-queue'
 import { compressData, decideCompression } from './compression'
-import { addParamsToURL, encodePostData, xhr } from './send-request'
+import { addParamsToURL, xhr } from './send-request'
+import { encodePostData } from 'encodePostData'
 import { RetryQueue } from './retry-queue'
 import { SessionIdManager } from './sessionid'
 import {
@@ -59,16 +60,6 @@ import { PostHogSurveys, SurveyCallback } from './posthog-surveys'
 import { RateLimiter } from './rate-limiter'
 import { uuidv7 } from './uuidv7'
 
-/*
-SIMPLE STYLE GUIDE:
-
-this.x === public function
-this._x === internal - only use within this file
-this.__x === private - only use within the class
-
-Globals should be all caps
-*/
-
 enum InitType {
   INIT_MODULE = 0,
   INIT_SNIPPET = 1,
@@ -76,7 +67,6 @@ enum InitType {
 
 let init_type: InitType
 
-// TODO: the type of this is very loose. Sometimes it's also PostHogLib itself
 let posthog_master: Record<string, PostHog> & {
   init: (token: string, config: Partial<PostHogConfig>, name: string) => void
 }
@@ -85,11 +75,8 @@ let posthog_master: Record<string, PostHog> & {
 const __NOOP = () => {}
 const __NOOPTIONS = {}
 
-const PRIMARY_INSTANCE_NAME = 'posthog'
+const PRIMARY_INSTANCE_NAME = 'Stark'
 
-/*
- * 动态...常数？ 这是矛盾的吗？
- */
 const USE_XHR = window.XMLHttpRequest && 'withCredentials' in new XMLHttpRequest()
 
 let ENQUEUE_REQUESTS = !USE_XHR && userAgent.indexOf('MSIE') === -1 && userAgent.indexOf('Mozilla') === -1
@@ -154,8 +141,8 @@ const defaultConfig = (): PostHogConfig => ({
   get_device_id: (uuid) => uuid,
   _onCapture: __NOOP,
   capture_performance: undefined,
-  name: 'posthog',
-  callback_fn: 'posthog._jsc',
+  name: 'stark',
+  callback_fn: 'stark._jsc',
   bootstrap: {},
   disable_compression: false,
   session_idle_timeout_seconds: 30 * 60,
@@ -163,11 +150,6 @@ const defaultConfig = (): PostHogConfig => ({
 
 /**
  * create_phlib（令牌：字符串，配置：对象，名称：字符串）
- *
- * 该函数由PostHogLib对象的init方法使用
- * 以及 JSLib 末尾的主初始化程序（即
- * 初始化 document.posthog 以及任何其他实例
- * 在此文件加载之前声明）。
  */
 const create_phlib = function (
   token: string,
@@ -196,7 +178,6 @@ const create_phlib = function (
   } else {
     if (target && !_isArray(target)) {
       console.error('You have already initialized ' + name)
-      // TODO: throw something instead?
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return
@@ -223,10 +204,8 @@ const create_phlib = function (
     const num_enabled_buckets = 100
     if (!autocapture.enabledForProject(instance.get_config('token'), num_buckets, num_enabled_buckets)) {
       instance.__autocapture = false
-      logger.log('Not in active bucket: disabling Automatic Event Collection.')
     } else if (!autocapture.isBrowserSupported()) {
       instance.__autocapture = false
-      logger.log('Disabling Automatic Event Collection because this browser is not supported')
     } else {
       autocapture.init(instance)
     }
@@ -334,14 +313,8 @@ export class PostHog {
    * @param {String} [name]
    */
   init(token: string, config?: Partial<PostHogConfig>, name?: string): PostHog | void {
-    if (_isUndefined(name)) {
-      console.error('You must name your new library: init(token, config, name)')
-      return
-    }
-    if (name === PRIMARY_INSTANCE_NAME) {
-      console.error('You must initialize the main posthog object right after you include the PostHog js snippet')
-      return
-    }
+    if (_isUndefined(name)) return
+    if (name === PRIMARY_INSTANCE_NAME) return
 
     const instance: PostHog = create_phlib(token, config, name, (instance: PostHog) => {
       posthog_master[name] = instance
@@ -555,20 +528,16 @@ export class PostHog {
     this.__compress_and_send_json_request(url, jsonData, options || __NOOPTIONS, __NOOP)
   }
 
-  __compress_and_send_json_request(
-    url: string,
-    jsonData: string,
-    options: XHROptions,
-    callback?: RequestCallback
-  ): void {
+  __compress_and_send_json_request(url: string, jsonData: any, options: XHROptions, callback?: RequestCallback): void {
     const [data, _options] = compressData(decideCompression(this.compression), jsonData, options)
-    this._send_request(url, data, _options, callback)
+    console.log('__compress_and_send_json_request', data)
+    this._send_request(url, jsonData, _options, callback)
   }
 
   _send_request(url: string, data: Record<string, any>, options: CaptureOptions, callback?: RequestCallback): void {
     if (this.rateLimiter.isRateLimited(options._batchKey)) {
       if (this.get_config('debug')) {
-        console.warn('[PostHog SendRequest] is quota limited. Dropping request.')
+        console.warn('配额有限。 放弃请求。')
       }
       return
     }
@@ -659,7 +628,6 @@ export class PostHog {
         calls,
         function (item) {
           if (_isArray(item[0])) {
-            // chained call
             let caller = thisArg
             _each(item, function (call) {
               caller = caller[call[0]].apply(caller, call.slice(1))
@@ -725,7 +693,7 @@ export class PostHog {
     }
 
     if (_isUndefined(event_name) || typeof event_name !== 'string') {
-      console.error('No event name provided to posthog.capture')
+      console.error('没有向 posthog.capture 提供事件名称')
       return
     }
 
@@ -755,24 +723,22 @@ export class PostHog {
 
     data = _copyAndTruncateStrings(data, options._noTruncate ? null : this.get_config('properties_string_max_length'))
     data.timestamp = options.timestamp || new Date()
-
     if (this.get_config('debug')) {
       logger.log('PostHog.js send', data)
     }
-    const jsonData = JSON.stringify(data)
+    // const jsonData = JSON.stringify(data)
 
     const url = this.get_config('api_host') + (options.endpoint || '/e/')
 
     const has_unique_traits = options !== __NOOPTIONS
-
     if (this.get_config('request_batching') && (!has_unique_traits || options._batchKey) && !options.send_instantly) {
       this._requestQueue.enqueue(url, data, options)
     } else {
-      this.__compress_and_send_json_request(url, jsonData, options)
+      console.log('request_batching', data)
+      this.__compress_and_send_json_request(url, data, options)
     }
 
     this._invokeCaptureHooks(event_name, data)
-
     return data
   }
 
@@ -937,7 +903,6 @@ export class PostHog {
     this.surveys.getSurveys(callback, forceReload)
   }
 
-  /** Get surveys that should be enabled for the current user. */
   getActiveMatchingSurveys(callback: SurveyCallback, forceReload = false): void {
     this.surveys.getActiveMatchingSurveys(callback, forceReload)
   }
@@ -1136,7 +1101,6 @@ export class PostHog {
       this._register_single(ALIAS_ID_KEY, alias)
       return this.capture('$create_alias', { alias: alias, distinct_id: original })
     } else {
-      console.error('alias matches current distinct_id - skipping api call.')
       this.identify(alias)
       return -1
     }
@@ -1185,7 +1149,6 @@ export class PostHog {
 
   /**
    * 打开会话记录并更新配置选项
-   *
    */
   startSessionRecording(): void {
     this.set_config({ disable_session_recording: false })
@@ -1193,7 +1156,6 @@ export class PostHog {
 
   /**
    * 关闭会话记录并更新配置选项
-   *
    */
   stopSessionRecording(): void {
     this.set_config({ disable_session_recording: true })
@@ -1201,7 +1163,6 @@ export class PostHog {
 
   /**
    * 返回一个布尔值，指示是否进行会话记录
-   *
    */
   sessionRecordingStarted(): boolean {
     return !!this.sessionRecording?.started()
@@ -1270,7 +1231,7 @@ export class PostHog {
 
       // 检查是否应该默认选择退出
       // 注意：默认情况下，我们不会清除此处的持久性，因为选择退出默认状态通常是
-      //       在收集 GDPR 信息时用作初始状态
+      // 在收集 GDPR 信息时用作初始状态
     } else if (
       !this.has_opted_in_capturing() &&
       (this.get_config('opt_out_capturing_by_default') || cookieStore.get('ph_optout'))
@@ -1431,13 +1392,9 @@ export class PostHog {
 
   debug(debug?: boolean): void {
     if (debug === false) {
-      window.console.log("You've disabled debug mode.")
       localStorage && localStorage.removeItem('ph_debug')
       this.set_config({ debug: false })
     } else {
-      window.console.log(
-        "You're now in debug mode. All calls to PostHog will be logged in your console.\nYou can disable this with `posthog.debug(false)`."
-      )
       localStorage && localStorage.setItem('ph_debug', 'true')
       this.set_config({ debug: true })
     }
@@ -1457,8 +1414,6 @@ const extend_mp = function () {
 }
 
 const override_ph_init_func = function () {
-  // 我们重写代码片段初始化函数来处理以下情况：
-  // 用户在脚本加载和运行后初始化 posthog 库
   posthog_master['init'] = function (token?: string, config?: Partial<PostHogConfig>, name?: string) {
     if (name) {
       // initialize a sub library
@@ -1473,10 +1428,8 @@ const override_ph_init_func = function () {
       let instance: PostHog = posthog_master as any as PostHog
 
       if (instances[PRIMARY_INSTANCE_NAME]) {
-        // main posthog lib already initialized
         instance = instances[PRIMARY_INSTANCE_NAME]
       } else if (token) {
-        // intialize the main posthog lib
         instance = create_phlib(token, config || {}, PRIMARY_INSTANCE_NAME, (instance: PostHog) => {
           instances[PRIMARY_INSTANCE_NAME] = instance
           instance._loaded()
@@ -1497,7 +1450,7 @@ const override_ph_init_func = function () {
 const add_dom_loaded_handler = function () {
   // 跨浏览器 DOM 加载支持
   function dom_loaded_handler() {
-    // 函数标志，因为只执行一次
+    // 函数标志，只执行一次
     if ((dom_loaded_handler as any).done) {
       return
     }
@@ -1539,7 +1492,6 @@ export function init_from_snippet(): void {
     return
   }
 
-  // 加载 PostHog 库的实例
   _each(posthog_master['_i'], function (item: [token: string, config: Partial<PostHogConfig>, name: string]) {
     if (item && _isArray(item)) {
       instances[item[2]] = create_phlib(...item)

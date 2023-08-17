@@ -14,7 +14,6 @@ export function getClassName(el: Element): string {
 
 export function getSafeText(el: Element): string {
   let elText = ''
-
   if (shouldCaptureElement(el) && !isSensitiveElement(el) && el.childNodes && el.childNodes.length) {
     _each(el.childNodes, function (child) {
       if (isTextNode(child) && child.textContent) {
@@ -22,13 +21,22 @@ export function getSafeText(el: Element): string {
           .split(/(\s+)/)
           .filter(shouldCaptureValue)
           .join('')
-          // normalize whitespace
           .replace(/[\r\n]/g, ' ')
           .replace(/[ ]+/g, ' ')
-          // truncate
           .substring(0, 255)
       }
     })
+  }
+  // console.log('getSafeText', el.childNodes)
+  if (shouldCaptureElement(el) && isSensitiveElement(el) && isInteractElement(el)) {
+    const v = el['value']
+    elText += _trim(v)
+      .split(/(\s+)/)
+      .filter(shouldCaptureValue)
+      .join('')
+      .replace(/[\r\n]/g, ' ')
+      .replace(/[ ]+/g, ' ')
+      .substring(0, 255)
   }
 
   return _trim(elText)
@@ -50,7 +58,18 @@ export function isDocumentFragment(el: Element | ParentNode | undefined | null):
   return !!el && el.nodeType === 11
 }
 
-export const autocaptureCompatibleElements = ['a', 'button', 'form', 'input', 'select', 'textarea', 'label']
+export const autocaptureCompatibleElements = [
+  'a',
+  'button',
+  'form',
+  'input',
+  'select',
+  'textarea',
+  'label',
+  'img',
+  'image',
+  'div',
+]
 
 export function shouldCaptureDomEvent(
   el: Element,
@@ -175,7 +194,7 @@ export function shouldCaptureElement(el: Element): boolean {
 }
 
 export function isSensitiveElement(el: Element): boolean {
-  const allowedInputTypes = ['button', 'checkbox', 'submit', 'reset']
+  const allowedInputTypes = ['button', 'checkbox', 'submit', 'reset', 'img']
   if (
     (isTag(el, 'input') && !allowedInputTypes.includes((el as HTMLInputElement).type)) ||
     isTag(el, 'select') ||
@@ -184,6 +203,11 @@ export function isSensitiveElement(el: Element): boolean {
   ) {
     return true
   }
+  return false
+}
+
+export function isInteractElement(el: Element): boolean {
+  if (isTag(el, 'input') || isTag(el, 'textarea')) return true
   return false
 }
 
@@ -220,6 +244,7 @@ export function isAngularStyleAttr(attributeName: string): boolean {
 export function getDirectAndNestedSpanText(target: Element): string {
   let text = getSafeText(target)
   text = `${text} ${getNestedSpanText(target)}`.trim()
+  console.log('getDirectAndNestedSpanText', target)
   return shouldCaptureValue(text) ? text : ''
 }
 

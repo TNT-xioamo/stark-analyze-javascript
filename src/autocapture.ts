@@ -95,7 +95,6 @@ const autocapture = {
       })
 
     _each(elem.attributes, function (attr: Attr) {
-      // Only capture attributes we know are safe
       if (isSensitiveElement(elem) && ['name', 'id', 'class'].indexOf(attr.name) === -1) return
 
       if (!maskInputs && shouldCaptureValue(attr.value) && !isAngularStyleAttr(attr.name)) {
@@ -144,7 +143,6 @@ const autocapture = {
     return propValues.join(', ')
   },
 
-  // TODO: delete custom_properties after changeless typescript refactor
   _getCustomProperties: function (targetElementList: Element[]): Properties {
     const props: Properties = {} // will be deleted
     _each(this._customProperties, (customProperty) => {
@@ -184,6 +182,7 @@ const autocapture = {
     }
 
     if (target && shouldCaptureDomEvent(target, e, this.config)) {
+      console.error('_captureEvent', target)
       const targetElementList = [target]
       let curEl = target
       while (curEl.parentNode && !isTag(curEl, 'body')) {
@@ -277,21 +276,19 @@ const autocapture = {
     if (typeof instance.__autocapture !== 'boolean') {
       this.config = instance.__autocapture
     }
-
     if (this.config?.url_allowlist) {
       this.config.url_allowlist = this.config.url_allowlist.map((url) => new RegExp(url))
     }
 
     this.rageclicks = new RageClick(instance.get_config('rageclick'))
+    console.error('isRageClick', this.rageclicks)
   },
 
   afterDecideResponse: function (response: DecideResponse, instance: PostHog): void {
     const token = instance.get_config('token')
     if (this._initializedTokens.indexOf(token) > -1) {
-      logger.log('autocapture already initialized for token "' + token + '"')
       return
     }
-
     if (instance.persistence) {
       instance.persistence.register({
         [AUTOCAPTURE_DISABLED_SERVER_SIDE]: !!response['autocapture_opt_out'],
@@ -302,20 +299,24 @@ const autocapture = {
     this._setIsAutocaptureEnabled(instance)
 
     this._initializedTokens.push(token)
+    console.error('afterDecideResponse', response['config'])
+    this._customProperties = response['custom_properties']
+    this._addDomEventHandlers(instance)
+    // instance['__autocapture'] = false
+    // if (
+    //   response &&
+    //   response['config'] &&
+    //   response['config']['enable_collect_everything'] &&
+    //   this._isAutocaptureEnabled
+    // ) {
+    //   if (response['custom_properties']) {
+    //     this._customProperties = response['custom_properties']
+    //   }
 
-    if (
-      response &&
-      response['config'] &&
-      response['config']['enable_collect_everything'] &&
-      this._isAutocaptureEnabled
-    ) {
-      if (response['custom_properties']) {
-        this._customProperties = response['custom_properties']
-      }
-      this._addDomEventHandlers(instance)
-    } else {
-      instance['__autocapture'] = false
-    }
+    //   this._addDomEventHandlers(instance)
+    // } else {
+    //   instance['__autocapture'] = false
+    // }
   },
 
   enabledForProject: function (

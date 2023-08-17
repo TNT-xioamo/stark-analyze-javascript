@@ -1,5 +1,6 @@
 import { RequestQueueScaffold } from './base-request-queue'
-import { encodePostData, xhr } from './send-request'
+import { xhr } from './send-request'
+import { encodePostData } from 'encodePostData'
 import { QueuedRequestData, RetryQueueElement } from './types'
 import Config from './config'
 import { RateLimiter } from './rate-limiter'

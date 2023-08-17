@@ -20,7 +20,6 @@ const CASE_INSENSITIVE_PERSISTENCE_TYPES: readonly Lowercase<PostHogConfig['pers
 ]
 
 /**
- * PostHog Persistence Object
  * @constructor
  */
 export class PostHogPersistence {
@@ -112,11 +111,6 @@ export class PostHogPersistence {
     }
   }
 
-  /**
-   * NOTE: Saving frequently causes issues with Recordings and Consent Management Platform (CMP) tools which
-   * observe cookie changes, and modify their UI, often causing infinite loops.
-   * As such callers of this should ideally check that the data has changed beforehand
-   */
   save(): void {
     if (this.disabled) {
       return
@@ -129,9 +123,6 @@ export class PostHogPersistence {
     this.storage.remove(this.name, false)
     this.storage.remove(this.name, true)
   }
-
-  // removes the storage entry and deletes all loaded data
-  // forced name for tests
 
   clear(): void {
     this.remove()
@@ -225,10 +216,6 @@ export class PostHogPersistence {
       $referring_domain: this['props']['$referring_domain'],
     })
   }
-
-  // safely fills the passed in object with stored properties,
-  // does not override any properties defined in both
-  // returns the passed in object
 
   safe_merge(props: Properties): Properties {
     _each(this.props, function (val, prop) {

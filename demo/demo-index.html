@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <div id="root">
+      <div id="identifies"></div>
+    <div>
+      <input type="text">
+      <div>asdasdasd</div>
+      <button>123123</button>
+      <a href="https://modelscope.cn/models/ZhipuAI/chatglm2-6b-32k/quickstart" target="_blank">a链接跳转</a></a>
+      <textarea name="" id="" cols="30" rows="10"></textarea>
+      <div class="bg-img"></div>
+      <img width="300" src="https://static001.geekbang.org/resource/image/73/78/7333f477e1919435a9bb7bbe48eda078.jpg?x-oss-process=image/resize,m_fill,h_800,w_1636" alt="" srcset="">
+    </div>
+    </div>
+  </div>
+</body>
+</html>
+<!-- <script src="../dist/index.js"></script> -->
+
+<script>
+  // const mit = window['StarkDataAnalytic202307']
+  // mit.init({
+  //   server_url: 'https://buass',
+  //   app_id: 'test'
+  // })
+</script>
+
+<script>
+  !function(t, e) {
+    var o, n, p, r;
+    e.__SV || (window.posthog = e, e._i = [], e.init = function(i, s, a) {
+      function g(t, e) {
+        var o = e.split(".");
+        2 == o.length && (t = t[o[0]], e = o[1]),
+        t[e] = function() {
+          t.push([e].concat(Array.prototype.slice.call(arguments, 0)))
+        }
+      } (p = t.createElement("script")).type = "text/javascript",
+      p.async = !0,
+      p.src = s.hast_host + "/dist/array.js",
+      (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r);
+      var u = e;
+      for (void 0 !== a ? u = e[a] = [] : a = "posthog", u.people = u.people || [], u.toString = function(t) {
+        var e = "posthog";
+        return "posthog" !== a && (e += "." + a),
+        t || (e += " (stub)"),
+        e
+      },
+      u.people.toString = function() {
+        return u.toString(1) + ".people (stub)"
+      },
+      o = "capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing   has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload   reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys".  split(" "), n = 0; n < o.length; n++) g(u, o[n]);
+      e._i.push([i, s, a])
+    },
+    e.__SV = 1)
+  } (document, window.posthog || []);
+  posthog.init('386251', {
+    hast_host: '',
+    api_host: 'http://test2.easthome.com'
+  })
+  </script>
+
+<style>
+  .bg-img {
+    width: 80px;
+    height: 80px;
+    background: url('https://static001.geekbang.org/resource/image/73/78/7333f477e1919435a9bb7bbe48eda078.jpg?x-oss-process=image/resize,m_fill,h_800,w_1636') no-repeat ;
+  }
+</style>

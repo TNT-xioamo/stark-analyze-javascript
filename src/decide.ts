@@ -29,7 +29,7 @@ export class Decide {
     })
 
     // const encoded_data = _base64Encode(json_data)
-    const encoded_data = json_data
+    const encoded_data = JSON.parse(json_data)
     console.error('encoded_data', encoded_data)
     this.instance._send_request(
       // 请求地址
@@ -42,17 +42,15 @@ export class Decide {
 
   parseDecideResponse(response: DecideResponse): void {
     if (response?.status === 0) {
-      console.error('Failed to fetch feature flags from PostHog.')
       return
     }
     if (!(document && document.body)) {
-      console.log('document not ready yet, trying again in 500 milliseconds...')
       setTimeout(() => {
         this.parseDecideResponse(response)
       }, 500)
       return
     }
-
+    console.error('parseDecideResponse', response)
     this.instance.toolbar.afterDecideResponse(response)
     this.instance.sessionRecording?.afterDecideResponse(response)
     autocapture.afterDecideResponse(response, this.instance)

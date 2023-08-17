@@ -71,24 +71,20 @@ export const xhr = ({
 }: XHRParams) => {
   const req = new XMLHttpRequest()
   req.open(options.method || 'GET', url, true)
-
-  const body = encodePostData(data, options)
-
+  // const body = encodePostData(data, options)
   _each(headers, function (headerValue, headerName) {
     req.setRequestHeader(headerName, headerValue)
   })
 
   if (options.method === 'POST' && !options.blob) {
-    req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+    // req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+    req.setRequestHeader('Content-Type', 'application/json;charset=utf-8')
   }
 
   req.timeout = timeout
-  // send the ph_optout cookie
-  // withCredentials cannot be modified until after calling .open on Android and Mobile Safari
   req.withCredentials = true
   req.onreadystatechange = () => {
     if (req.readyState === 4) {
-      // XMLHttpRequest.DONE == 4, except in safari 4
       if (req.status === 200) {
         if (callback) {
           let response
@@ -127,5 +123,6 @@ export const xhr = ({
       }
     }
   }
-  req.send(body)
+  console.log(data)
+  req.send(JSON.stringify(data))
 }
