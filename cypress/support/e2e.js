@@ -22,28 +22,28 @@ import 'given2/setup'
 
 // Add console errors into cypress logs.
 Cypress.on('window:before:load', (win) => {
-    cy.spy(win.console, 'error')
-    cy.spy(win.console, 'warn')
-    cy.spy(win.console, 'log')
-    cy.spy(win.console, 'debug')
+  cy.spy(win.console, 'error')
+  cy.spy(win.console, 'warn')
+  cy.spy(win.console, 'log')
+  cy.spy(win.console, 'debug')
 })
 
 beforeEach(() => {
-    cy.server()
+  cy.server()
 
-    cy.route('POST', '**/decide/*').as('decide')
-    cy.route('POST', '**/e/*').as('capture')
-    cy.route('POST', '**/ses/*').as('session-recording')
+  cy.route('POST', '**/decide/*').as('decide')
+  cy.route('POST', '**/e/*').as('capture')
+  cy.route('POST', '**/ses/*').as('session-recording')
 
-    cy.readFile('dist/array.full.js').then((body) => {
-        cy.intercept('**/static/array.full.js', { body })
-    })
+  cy.readFile('dist/array.full.js').then((body) => {
+    cy.intercept('**/static/array.full.js', { body })
+  })
 
-    cy.readFile('dist/array.js').then((body) => {
-        cy.intercept('**/static/array.js', { body })
-    })
+  cy.readFile('dist/array.js').then((body) => {
+    cy.intercept('**/static/array.js', { body })
+  })
 
-    cy.readFile('dist/recorder.js').then((body) => {
-        cy.intercept('**/static/recorder.js*', { body }).as('recorder')
-    })
+  cy.readFile('dist/recorder.js').then((body) => {
+    cy.intercept('**/static/recorder.js*', { body }).as('recorder')
+  })
 })
