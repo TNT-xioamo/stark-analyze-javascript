@@ -17,32 +17,13 @@ export type CaptureCallback = (response: any, data: any) => void
 export type AutocaptureCompatibleElement = 'a' | 'button' | 'form' | 'input' | 'select' | 'textarea' | 'label'
 export type DomAutocaptureEvents = 'click' | 'change' | 'submit'
 
-/**
- * If an array is passed for an allowlist, autocapture events will only be sent for elements matching
- * at least one of the elements in the array. Multiple allowlists can be used
- */
 export interface AutocaptureConfig {
-  /**
-   * List of URLs to allow autocapture on, can be strings to match
-   * or regexes e.g. ['https://example.com', 'test.com/.*']
-   */
   url_allowlist?: (string | RegExp)[]
 
-  /**
-   * List of DOM events to allow autocapture on  e.g. ['click', 'change', 'submit']
-   */
   dom_event_allowlist?: DomAutocaptureEvents[]
 
-  /**
-   * List of DOM elements to allow autocapture on
-   * e.g. ['a', 'button', 'form', 'input', 'select', 'textarea', 'label']
-   */
   element_allowlist?: AutocaptureCompatibleElement[]
 
-  /**
-   * List of CSS selectors to allow autocapture on
-   * e.g. ['[ph-capture]']
-   */
   css_selector_allowlist?: string[]
 }
 
@@ -53,6 +34,7 @@ export interface PostHogConfig {
   api_method: string
   api_transport: string
   ui_host: string | null
+  page_id: string
   token: string
   autocapture: boolean | AutocaptureConfig
   rageclick: boolean
@@ -104,7 +86,6 @@ export interface PostHogConfig {
   callback_fn: string
   _onCapture: (eventName: string, eventData: CaptureResult) => void
   capture_performance?: boolean
-  // Should only be used for testing. Could negatively impact performance.
   disable_compression: boolean
   bootstrap: {
     distinctID?: string
@@ -142,7 +123,6 @@ export interface SessionRecordingOptions {
   maskAllInputs?: boolean
   maskInputOptions?: MaskInputOptions
   maskInputFn?: ((text: string, element?: HTMLElement) => string) | null
-  /** Modify the network request before it is captured. Returning null stops it being captured */
   maskNetworkRequestFn?: ((url: NetworkRequest) => NetworkRequest | null | undefined) | null
   slimDOMOptions?: SlimDOMOptions | 'all' | true
   collectFonts?: boolean
@@ -168,13 +148,13 @@ export interface XHROptions {
 }
 
 export interface CaptureOptions extends XHROptions {
-  $set?: Properties /** used with $identify */
-  $set_once?: Properties /** used with $identify */
-  _batchKey?: string /** key of queue, e.g. 'sessionRecording' vs 'event' */
+  $set?: Properties
+  $set_once?: Properties
+  _batchKey?: string
   _metrics?: Properties
-  _noTruncate?: boolean /** if set, overrides and disables config.properties_string_max_length */
-  endpoint?: string /** defaults to '/e/' */
-  send_instantly?: boolean /** if set skips the batched queue */
+  _noTruncate?: boolean
+  endpoint?: string
+  send_instantly?: boolean
   timestamp?: Date
 }
 
@@ -204,13 +184,12 @@ export interface DecideResponse {
   config: {
     enable_collect_everything: boolean
   }
-  custom_properties: AutoCaptureCustomProperty[] // TODO: delete, not sent
+  custom_properties: AutoCaptureCustomProperty[]
   featureFlags: Record<string, string | boolean>
   featureFlagPayloads: Record<string, JsonType>
   errorsWhileComputingFlags: boolean
   autocapture_opt_out?: boolean
   capturePerformance?: boolean
-  // this is currently in development and may have breaking changes without a major version bump
   autocaptureExceptions?:
     | boolean
     | {
@@ -223,15 +202,14 @@ export interface DecideResponse {
     recorderVersion?: 'v1' | 'v2'
   }
   toolbarParams: ToolbarParams
-  editorParams?: ToolbarParams /** @deprecated, renamed to toolbarParams, still present on older API responses */
-  toolbarVersion: 'toolbar' /** @deprecated, moved to toolbarParams */
+  editorParams?: ToolbarParams
+  toolbarVersion: 'toolbar'
   isAuthenticated: boolean
   siteApps: { id: number; url: string }[]
 }
 
 export type FeatureFlagsCallback = (flags: string[], variants: Record<string, string | boolean>) => void
 
-// TODO: delete custom_properties after changeless typescript refactor
 export interface AutoCaptureCustomProperty {
   name: string
   css_selector: string
@@ -248,15 +226,14 @@ export interface GDPROptions {
     event: string,
     properties: Properties,
     options: CaptureOptions
-  ) => void /** function used for capturing a PostHog event to record the opt-in action */
-  captureEventName?: string /** event name to be used for capturing the opt-in action */
-  captureProperties?: Properties /** set of properties to be captured along with the opt-in action */
-  /** persistence mechanism used */
+  ) => void /** 一堆相应的配置小字段 你可以选择使用 */
+  captureEventName?: string
+  captureProperties?: Properties
   persistenceType?: 'cookie' | 'localStorage' | 'localStorage+cookie'
-  persistencePrefix?: string /** [__ph_opt_in_out] - custom prefix to be used in the cookie/localstorage name */
-  cookieExpiration?: number /** number of days until the opt-in cookie expires */
-  crossSubdomainCookie?: boolean /** whether the opt-in cookie is set as cross-subdomain or not */
-  secureCookie?: boolean /** whether the opt-in cookie is set as secure or not */
+  persistencePrefix?: string
+  cookieExpiration?: number
+  crossSubdomainCookie?: boolean
+  secureCookie?: boolean
   respectDnt?: boolean
   window?: Window
 }
@@ -280,10 +257,9 @@ export type ToolbarUserIntent = 'add-action' | 'edit-action'
 export type ToolbarSource = 'url' | 'localstorage'
 export type ToolbarVersion = 'toolbar'
 
-/* sync with posthog */
 export interface ToolbarParams {
-  token?: string /** public posthog-js token */
-  temporaryToken?: string /** private temporary user token */
+  token?: string
+  temporaryToken?: string
   actionId?: number
   userIntent?: ToolbarUserIntent
   source?: ToolbarSource
@@ -310,9 +286,7 @@ export type SnippetArrayItem = [method: string, ...args: any[]]
 
 export type JsonType = string | number | boolean | null | { [key: string]: JsonType } | Array<JsonType>
 
-/** A feature that isn't publicly available yet.*/
 export interface EarlyAccessFeature {
-  // Sync this with the backend's EarlyAccessFeatureSerializer!
   name: string
   description: string
   stage: 'concept' | 'alpha' | 'beta'

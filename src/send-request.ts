@@ -44,7 +44,6 @@ export const encodePostData = (data: PostData | Uint8Array, options: Partial<XHR
   let body_data
   const isUint8Array = (d: unknown): d is Uint8Array => Object.prototype.toString.call(d) === '[object Uint8Array]'
   if (Array.isArray(data) || isUint8Array(data)) {
-    // TODO: eh? passing an Array here?
     body_data = 'data=' + encodeURIComponent(data as any)
   } else {
     body_data = 'data=' + encodeURIComponent(data.data as string)
@@ -123,6 +122,5 @@ export const xhr = ({
       }
     }
   }
-  console.log(data)
   req.send(JSON.stringify(data))
 }

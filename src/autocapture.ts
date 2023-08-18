@@ -174,7 +174,7 @@ const autocapture = {
     if (isTextNode(target)) {
       target = (target.parentNode || null) as Element | null
     }
-
+    if (target && target?.['children']?.length > 2) return
     if (eventName === '$autocapture' && e.type === 'click' && e instanceof MouseEvent) {
       if (this.rageclicks?.isRageClick(e.clientX, e.clientY, new Date().getTime())) {
         this._captureEvent(e, instance, '$rageclick')
@@ -185,7 +185,7 @@ const autocapture = {
       console.error('_captureEvent', target)
       const targetElementList = [target]
       let curEl = target
-      while (curEl.parentNode && !isTag(curEl, 'body')) {
+      while (curEl.parentNode && !isTag(curEl, 'body') && curEl.children.length < 2) {
         if (isDocumentFragment(curEl.parentNode)) {
           targetElementList.push((curEl.parentNode as any).host)
           curEl = (curEl.parentNode as any).host

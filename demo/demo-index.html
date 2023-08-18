@@ -63,7 +63,8 @@
   } (document, window.posthog || []);
   posthog.init('386251', {
     hast_host: '',
-    api_host: 'http://test2.easthome.com'
+    api_host: 'http://test2.easthome.com',
+    xhr_headers: { 'Authorization': 'token' }
   })
   </script>
 

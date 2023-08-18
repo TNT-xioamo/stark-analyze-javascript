@@ -89,6 +89,7 @@ const defaultConfig = (): PostHogConfig => ({
   api_host: '',
   api_method: 'POST',
   api_transport: 'XHR',
+  page_id: 'pageId',
   ui_host: null,
   token: '',
   autocapture: true,
@@ -135,7 +136,7 @@ const defaultConfig = (): PostHogConfig => ({
   advanced_disable_feature_flags_on_first_load: false,
   advanced_disable_toolbar_metrics: false,
   on_xhr_error: (req) => {
-    const error = 'Bad HTTP status: ' + req.status + ' ' + req.statusText
+    const error = `Bad HTTP status: ${req.status}  ${req.statusText}`
     console.error(error)
   },
   get_device_id: (uuid) => uuid,
@@ -148,9 +149,6 @@ const defaultConfig = (): PostHogConfig => ({
   session_idle_timeout_seconds: 30 * 60,
 })
 
-/**
- * create_phlib（令牌：字符串，配置：对象，名称：字符串）
- */
 const create_phlib = function (
   token: string,
   config?: Partial<PostHogConfig>,
@@ -222,9 +220,6 @@ const create_phlib = function (
   return instance
 }
 
-/**
- * @constructor
- */
 export class PostHog {
   __loaded: boolean
   __loaded_recorder_version: 'v1' | 'v2' | undefined
@@ -436,7 +431,7 @@ export class PostHog {
     }
     window.addEventListener &&
       window.addEventListener('onpagehide' in self ? 'pagehide' : 'unload', this._handle_unload.bind(this))
-
+    window.addEventListener && window.addEventListener('visibilitychange', this._handle_visibility_change.bind(this))
     updateInitComplete('syncCode')()
   }
 
@@ -454,10 +449,6 @@ export class PostHog {
     if (this.get_config('capture_pageview')) {
       this.capture('$pageview', { title: document.title }, { send_instantly: true })
     }
-    // 调用功能启用接口
-    // 调用决定获取启用哪些功能以及其他设置。
-    // 提醒一下，如果 /decide 端点被禁用，功能标志、工具栏、会话记录、自动捕获,
-    // 并且压缩将不可用。
     if (!this.get_config('advanced_disable_decide')) {
       new Decide(this).call()
     }
@@ -508,6 +499,8 @@ export class PostHog {
   }
 
   _handle_unload(): void {
+    // event?.preventDefault()
+    console.error('_handle_unload', 'request_batching')
     if (!this.get_config('request_batching')) {
       if (this.get_config('capture_pageview') && this.get_config('capture_pageleave')) {
         this.capture('$pageleave', null, { transport: 'sendBeacon' })
@@ -521,6 +514,16 @@ export class PostHog {
 
     this._requestQueue.unload()
     this._retryQueue.unload()
+  }
+
+  _handle_visibility_change(): void {
+    if (document.visibilityState == 'hidden') {
+      console.error('_handle_visibility_change', '你别走哇')
+      // this.capture('$pagehidden')
+    } else {
+      console.error('_handle_visibility_change', '你来啦哇')
+      // this.capture('$pageshow')
+    }
   }
 
   _handle_queued_event(url: string, data: Record<string, any>, options?: XHROptions): void {
@@ -693,7 +696,7 @@ export class PostHog {
     }
 
     if (_isUndefined(event_name) || typeof event_name !== 'string') {
-      console.error('没有向 posthog.capture 提供事件名称')
+      console.error('没有向 capture 提供事件名称')
       return
     }
 
@@ -715,7 +718,7 @@ export class PostHog {
       event: event_name,
       properties: this._calculate_event_properties(event_name, properties || {}),
     }
-
+    console.error('capture_', data)
     if (event_name === '$identify') {
       data['$set'] = options['$set']
       data['$set_once'] = options['$set_once']
@@ -724,7 +727,7 @@ export class PostHog {
     data = _copyAndTruncateStrings(data, options._noTruncate ? null : this.get_config('properties_string_max_length'))
     data.timestamp = options.timestamp || new Date()
     if (this.get_config('debug')) {
-      logger.log('PostHog.js send', data)
+      logger.log('stark send', data)
     }
     // const jsonData = JSON.stringify(data)
 
@@ -739,6 +742,7 @@ export class PostHog {
     }
 
     this._invokeCaptureHooks(event_name, data)
+
     return data
   }
 
@@ -779,6 +783,7 @@ export class PostHog {
 
     if (event_name === '$pageview') {
       properties['title'] = document.title
+      properties['$page_id'] = document.getElementById(this.config.page_id)?.innerText
     }
 
     if (event_name === '$performance_event') {
@@ -1301,19 +1306,6 @@ export class PostHog {
     })
   }
 
-  /**
-   * 选择用户参与此 PostHog 实例的数据捕获和 cookie/本地存储
-   * @param {Object} [options] 要覆盖的配置选项字典
-   * @param {function} [options.capture] 用于捕获 PostHog 事件以记录选择加入操作的函数（默认是此 PostHog 实例的捕获方法）
-   * @param {string} [options.capture_event_name=$opt_in] 用于捕获选择加入操作的事件名称
-   * @param {Object} [options.capture_properties] 随选择加入操作一起捕获的属性集
-   * @param {boolean} [options.enable_persistence=true] 如果为 true，将重新启用 sdk 持久性
-   * @param {string} [options.persistence_type=localStorage] 使用的持久性机制 - cookie 或 localStorage - 如果 localStorage 不可用，则回退到 cookie
-   * @param {string} [options.cookie_prefix=__ph_opt_in_out] 在 cookie/localstorage 名称中使用的自定义前缀
-   * @param {Number} [options.cookie_expiration] 选择加入 cookie 过期之前的天数（覆盖此 PostHog 实例配置中指定的值）
-   * @param {boolean} [options.cross_subdomain_cookie] 选择加入 cookie 是否设置为跨子域（覆盖此 PostHog 实例配置中指定的值）
-   * @param {boolean} [options.secure_cookie] 选择加入 cookie 是否设置为安全（覆盖此 PostHog 实例配置中指定的值）
-   */
   opt_in_capturing(options?: Partial<OptInOutCapturingOptions>): void {
     options = _extend(
       {
@@ -1326,15 +1318,6 @@ export class PostHog {
     this._gdpr_update_persistence(options)
   }
 
-  /**
-   * @param {Object} [options] 要覆盖的配置选项字典
-   * @param {boolean} [options.clear_persistence=true] 如果为 true，将删除 sdk 持久存储的所有数据
-   * @param {string} [options.persistence_type=localStorage] 使用的持久性机制 - cookie 或 localStorage - 如果 localStorage 不可用，则回退到 cookie
-   * @param {string} [options.cookie_prefix=__ph_opt_in_out] 在 cookie/localstorage 名称中使用的自定义前缀
-   * @param {Number} [options.cookie_expiration] 选择加入 cookie 过期之前的天数（覆盖此 PostHog 实例配置中指定的值）
-   * @param {boolean} [options.cross_subdomain_cookie] 选择加入 cookie 是否设置为跨子域（覆盖此 PostHog 实例配置中指定的值）
-   * @param {boolean} [options.secure_cookie] 选择加入 cookie 是否设置为安全（覆盖此 PostHog 实例配置中指定的值）
-   */
   opt_out_capturing(options?: Partial<OptInOutCapturingOptions>): void {
     const _options = _extend(
       {
@@ -1347,38 +1330,14 @@ export class PostHog {
     this._gdpr_update_persistence(_options)
   }
 
-  /**
-   * 检查用户是否已选择此 PostHog 实例的数据捕获和 cookies/localstorage
-   * @param {Object} [options] 要覆盖的配置选项字典
-   * @param {string} [options.persistence_type=localStorage] 使用的持久性机制 - cookie 或 localStorage - 如果 localStorage 不可用，则回退到 cookie
-   * @param {string} [options.cookie_prefix=__ph_opt_in_out] 在 cookie/localstorage 名称中使用的自定义前缀
-   * @returns {boolean} current opt-in status
-   */
   has_opted_in_capturing(options?: Partial<OptInOutCapturingOptions>): boolean {
     return this._gdpr_call_func(hasOptedIn, options)
   }
 
-  /**
-   * 检查用户是否已选择退出此 PostHog 实例的数据捕获和 cookie/本地存储
-   * @param {Object} [options] 要覆盖的配置选项字典
-   * @param {string} [options.persistence_type=localStorage] 使用的持久性机制 - cookie 或 localStorage - 如果 localStorage 不可用，则回退到 cookie
-   * @param {string} [options.cookie_prefix=__ph_opt_in_out] 在 cookie/localstorage 名称中使用的自定义前缀
-   * @returns {boolean} 当前选择退出状态
-   */
   has_opted_out_capturing(options?: Partial<OptInOutCapturingOptions>): boolean {
     return this._gdpr_call_func(hasOptedOut, options)
   }
 
-  /**
-   * 清除此 PostHog 实例的用户选择加入/退出数据捕获和 cookie/本地存储的状态
-   * @param {Object} [options] 要覆盖的配置选项字典
-   * @param {boolean} [options.enable_persistence=true] 如果为 true，将重新启用 sdk 持久性
-   * @param {string} [options.persistence_type=localStorage] 使用的持久性机制 - cookie 或 localStorage - 如果 localStorage 不可用，则回退到 cookie
-   * @param {string} [options.cookie_prefix=__ph_opt_in_out] 在 cookie/localstorage 名称中使用的自定义前缀
-   * @param {Number} [options.cookie_expiration] 选择加入 cookie 过期之前的天数（覆盖此 PostHog 实例配置中指定的值）
-   * @param {boolean} [options.cross_subdomain_cookie] 选择加入 cookie 是否设置为跨子域（覆盖此 PostHog 实例配置中指定的值）
-   * @param {boolean} [options.secure_cookie] 选择加入 cookie 是否设置为安全（覆盖此 PostHog 实例配置中指定的值）
-   */
   clear_opt_in_out_capturing(options?: Partial<OptInOutCapturingOptions>): void {
     const _options: Partial<OptInOutCapturingOptions> = _extend(
       {
@@ -1487,8 +1446,6 @@ export function init_from_snippet(): void {
   posthog_master = (window as any).posthog
 
   if (posthog_master['__loaded'] || (posthog_master['config'] && posthog_master['persistence'])) {
-    // lib 已至少加载一次； 这次我们不想覆盖全局对象，所以尽早轰炸
-    console.error('PostHog library has already been downloaded at least once.')
     return
   }
 
@@ -1501,7 +1458,6 @@ export function init_from_snippet(): void {
   override_ph_init_func()
   ;(posthog_master['init'] as any)()
 
-  // 更新窗口的 posthog 对象后触发加载事件
   _each(instances, function (instance) {
     instance._loaded()
   })

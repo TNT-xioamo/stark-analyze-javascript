@@ -29,8 +29,9 @@ export function getSafeText(el: Element): string {
   }
   // console.log('getSafeText', el.childNodes)
   if (shouldCaptureElement(el) && isSensitiveElement(el) && isInteractElement(el)) {
-    const v = el['value']
-    elText += _trim(v)
+    const v = el as HTMLInputElement
+    console.error(v.value)
+    elText += _trim(v.value)
       .split(/(\s+)/)
       .filter(shouldCaptureValue)
       .join('')
@@ -113,7 +114,8 @@ export function shouldCaptureDomEvent(
   const targetElementList: Element[] = [el]
   let parentNode: Element | boolean = true
   let curEl: Element = el
-  while (curEl.parentNode && !isTag(curEl, 'body')) {
+  // && el.children.length < 2
+  while (curEl.parentNode && !isTag(curEl, 'body') && el.children.length < 2) {
     if (isDocumentFragment(curEl.parentNode)) {
       targetElementList.push((curEl.parentNode as any).host)
       curEl = (curEl.parentNode as any).host

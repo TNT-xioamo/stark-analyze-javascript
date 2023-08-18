@@ -17,7 +17,6 @@ export const encodePostData = (data: PostData | Uint8Array, options: Partial<XHR
   let body_data
   const isUint8Array = (d: unknown): d is Uint8Array => Object.prototype.toString.call(d) === '[object Uint8Array]'
   if (Array.isArray(data) || isUint8Array(data)) {
-    //   // TODO: eh? passing an Array here?
     body_data = 'data=' + encodeURIComponent(data as any)
   } else {
     body_data = 'data=' + encodeURIComponent(data.data as string)
@@ -44,7 +43,6 @@ export const xhr = ({
   req.open(options.method || 'GET', url, true)
 
   const body = encodePostData(data, options)
-  console.error('encodePostData', body)
   _each(headers, function (headerValue, headerName) {
     req.setRequestHeader(headerName, headerValue)
   })
@@ -54,12 +52,9 @@ export const xhr = ({
   }
 
   req.timeout = timeout
-  // send the ph_optout cookie
-  // withCredentials cannot be modified until after calling .open on Android and Mobile Safari
   req.withCredentials = true
   req.onreadystatechange = () => {
     if (req.readyState === 4) {
-      // XMLHttpRequest.DONE == 4, except in safari 4
       if (req.status === 200) {
         if (callback) {
           let response
@@ -76,7 +71,6 @@ export const xhr = ({
           onXHRError(req)
         }
 
-        // don't retry certain errors
         if ([401, 403, 404, 500].indexOf(req.status) < 0) {
           retryQueue.enqueue({
             url,
@@ -98,5 +92,6 @@ export const xhr = ({
       }
     }
   }
+  console.error('encodePostData', body)
   req.send(body)
 }
