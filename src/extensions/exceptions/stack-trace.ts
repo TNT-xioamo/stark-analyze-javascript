@@ -57,16 +57,15 @@ const chrome: StackLineParserFn = (line) => {
   const parts = chromeRegex.exec(line)
 
   if (parts) {
-    const isEval = parts[2] && parts[2].indexOf('eval') === 0 // start of line
+    const isEval = parts[2] && parts[2].indexOf('eval') === 0
 
     if (isEval) {
       const subMatch = chromeEvalRegex.exec(parts[2])
 
       if (subMatch) {
-        // throw out eval line/column and use top-most line/column number
-        parts[2] = subMatch[1] // url
-        parts[3] = subMatch[2] // line
-        parts[4] = subMatch[3] // column
+        parts[2] = subMatch[1]
+        parts[3] = subMatch[2]
+        parts[4] = subMatch[3]
       }
     }
 

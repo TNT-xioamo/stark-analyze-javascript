@@ -25,11 +25,6 @@ export class Toolbar {
     }
   }
 
-  /**
-   * 要加载工具栏，需要访问令牌和其他状态。 该状态来自三个地方之一：
-   * 1. 在 URL 哈希参数中
-   * 2. 如果工具栏是在上一页上初始化的，则来自“toolbarParams”键下的会话存储
-   */
   maybeLoadToolbar(
     location = window.location,
     localStorage: Storage | undefined = undefined,
@@ -103,7 +98,7 @@ export class Toolbar {
       ...(disableToolbarMetrics ? { instrument: false } : {}),
     }
 
-        const { source: _discard, ...paramsToPersist } = toolbarParams // eslint-disable-line
+    const { source: _discard, ...paramsToPersist } = toolbarParams // eslint-disable-line
     window.localStorage.setItem('_postHogToolbarParams', JSON.stringify(paramsToPersist))
 
     loadScript(toolbarUrl, (err) => {
@@ -120,12 +115,10 @@ export class Toolbar {
     return true
   }
 
-  /** @deprecated Use "loadToolbar" instead. */
   _loadEditor(params: ToolbarParams): boolean {
     return this.loadToolbar(params)
   }
 
-  /** @deprecated Use "maybeLoadToolbar" instead. */
   maybeLoadEditor(
     location = window.location,
     localStorage: Storage | undefined = undefined,

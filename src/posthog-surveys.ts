@@ -1,11 +1,5 @@
 import { PostHog } from './posthog-core'
 import { SURVEYS } from './constants'
-
-/**
- * Having Survey types in types.ts was confusing tsc
- * and generating an invalid module.d.ts
- * See https://github.com/PostHog/posthog-js/issues/698
- */
 export interface SurveyAppearance {
   background_color?: string
   button_color?: string
@@ -43,7 +37,6 @@ export interface SurveyResponse {
 export type SurveyCallback = (surveys: Survey[]) => void
 
 export interface Survey {
-  // Sync this with the backend's SurveySerializer!
   name: string
   description: string
   type: SurveyType

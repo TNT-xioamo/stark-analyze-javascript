@@ -10,9 +10,6 @@ import {
 } from './type-checking'
 import { defaultStackParser, StackFrame } from './stack-trace'
 
-/**
- * 基于 wonderful MIT 授权 Sentry SDK
- */
 const ERROR_TYPES_PATTERN =
   /^(?:[Uu]ncaught (?:exception: )?)?(?:((?:Eval|Internal|Range|Reference|Syntax|Type|URI|)Error): )?(.*)$/i
 
@@ -159,7 +156,6 @@ export function errorToProperties([event, source, lineno, colno, error]: ErrorEv
     errorProperties = errorPropertiesFromObject(objectException)
     errorProperties.$exception_is_synthetic = true
   } else {
-    // If none of previous checks were valid, then it must be a string
     errorProperties.$exception_type = errorProperties.$exception_type || 'Error'
     errorProperties.$exception_message = errorProperties.$exception_message || candidate
     errorProperties.$exception_is_synthetic = true

@@ -1,5 +1,4 @@
 /**
- *
  * @license Apache-2.0
  * @copyright 2023-08-18 @stark
  * @packageDocumentation
@@ -20,7 +19,6 @@ if (!Number.isInteger) {
 const DIGITS = '0123456789abcdef'
 
 export class UUID {
-  /** @param bytes - The 16-byte byte array representation. */
   constructor(readonly bytes: Readonly<Uint8Array>) {
     if (bytes.length !== 16) {
       throw new TypeError('not 128-bit length')
@@ -90,7 +88,6 @@ export class UUID {
     return new UUID(this.bytes.slice(0))
   }
 
-  /** Returns true if `this` is equivalent to `other`. */
   equals(other: UUID): boolean {
     return this.compareTo(other) === 0
   }
@@ -116,7 +113,6 @@ class V7Generator {
     if (value !== undefined) {
       return value
     } else {
-      // reset state and resume
       this.timestamp = 0
       const valueAfterReset = this.generateOrAbort()
       if (valueAfterReset === undefined) {
@@ -128,7 +124,7 @@ class V7Generator {
 
   generateOrAbort(): UUID | undefined {
     const MAX_COUNTER = 0x3ff_ffff_ffff
-    const ROLLBACK_ALLOWANCE = 10_000 // 10 seconds
+    const ROLLBACK_ALLOWANCE = 10_000
 
     const ts = Date.now()
     if (ts > this.timestamp) {

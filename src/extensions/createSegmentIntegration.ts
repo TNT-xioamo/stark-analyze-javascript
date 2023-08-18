@@ -24,7 +24,7 @@ export const createSegmentIntegration = (posthog: PostHog): SegmentPlugin => {
   }
 
   return {
-    name: 'PostHog JS',
+    name: 'Stark JS',
     type: 'enrichment',
     version: '1.0.0',
     isLoaded: () => true,

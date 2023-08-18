@@ -42,7 +42,7 @@ export class SentryIntegration implements _SentryIntegration {
   ) => void
 
   constructor(_posthog: PostHog, organization?: string, projectId?: number, prefix?: string) {
-    console.log('哨兵', 'https://sentry.io/organizations')
+    console.log('哨兵', 'Stark')
     this.name = 'stark-js'
     this.setupOnce = function (addGlobalEventProcessor: (callback: _SentryEventProcessor) => void) {
       addGlobalEventProcessor((event: _SentryEvent) => {
@@ -61,7 +61,6 @@ export class SentryIntegration implements _SentryIntegration {
           $exception_message: exceptions[0]?.value,
           $exception_type: exceptions[0]?.type,
           $exception_personURL: host + '/person/' + _posthog.get_distinct_id(),
-          // Sentry Exception Properties
           $sentry_event_id: event.event_id,
           $sentry_exception: event.exception,
           $sentry_exception_message: exceptions[0]?.value,
@@ -71,7 +70,7 @@ export class SentryIntegration implements _SentryIntegration {
 
         if (organization && projectId)
           data['$sentry_url'] =
-            (prefix || 'https://sentry.io/organizations/') +
+            (prefix || 'https://baidu.com/') +
             organization +
             '/issues/?project=' +
             projectId +

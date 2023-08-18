@@ -87,8 +87,6 @@ export function clearOptInOut(token: string, options: GDPROptions) {
   _getStorage(options).remove(_getStorageKey(token, options), !!options.crossSubdomainCookie)
 }
 
-/** Private **/
-
 /**
  *
  * @param {Object} [options]
@@ -188,7 +186,6 @@ function _optInOut(optValue: boolean, token: string, options: GDPROptions) {
   )
 
   if (options.capture && optValue) {
-    // only capture event if opting in (optValue=true)
     options.capture(options.captureEventName || '$opt_in', options.captureProperties || {}, {
       send_instantly: true,
     })
@@ -215,7 +212,7 @@ export function userOptedOut(posthog: PostHog, silenceErrors: boolean | undefine
     }
   } catch (err) {
     if (!silenceErrors) {
-      console.error('Unexpected error when checking capturing opt-out status: ' + err)
+      console.error(err)
     }
   }
   return optedOut

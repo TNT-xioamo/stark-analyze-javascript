@@ -38,14 +38,6 @@ export class RequestQueue extends RequestQueueScaffold {
         this._empty_queue_count++
       }
 
-      /**
-       * _empty_queue_count will increment each time the queue is polled
-       *  and it is empty. To avoid empty polling (user went idle, stepped away from comp)
-       *  we can turn it off with the isPolling flag.
-       *
-       * Polling will be re enabled when the next time PostHogLib.capture is called with
-       *  an event that should be added to the event queue.
-       */
       if (this._empty_queue_count > 4) {
         this.isPolling = false
         this._empty_queue_count = 0
@@ -62,7 +54,6 @@ export class RequestQueue extends RequestQueueScaffold {
     this._event_queue.length = 0
     const requestValues = Object.values(requests)
 
-    // Always force events to be sent before recordings, as events are more important, and recordings are bigger and thus less likely to arrive
     const sortedRequests = [
       ...requestValues.filter((r) => r.url.indexOf('/e') === 0),
       ...requestValues.filter((r) => r.url.indexOf('/e') !== 0),
@@ -81,7 +72,6 @@ export class RequestQueue extends RequestQueueScaffold {
         requests[key] = { data: [], url, options }
       }
 
-      // :TRICKY: Metrics-only code
       if (
         options &&
         requests[key].options &&

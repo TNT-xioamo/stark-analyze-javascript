@@ -519,10 +519,10 @@ export class PostHog {
   _handle_visibility_change(): void {
     if (document.visibilityState == 'hidden') {
       console.error('_handle_visibility_change', '你别走哇')
-      // this.capture('$pagehidden')
+      this.capture('$pagehidden')
     } else {
       console.error('_handle_visibility_change', '你来啦哇')
-      // this.capture('$pageshow')
+      this.capture('$pageshow')
     }
   }
 

@@ -19,9 +19,6 @@ const CASE_INSENSITIVE_PERSISTENCE_TYPES: readonly Lowercase<PostHogConfig['pers
   'memory',
 ]
 
-/**
- * @constructor
- */
 export class PostHogPersistence {
   props: Properties
   storage: PersistentStore
@@ -36,8 +33,6 @@ export class PostHogPersistence {
   user_state: 'anonymous' | 'identified'
 
   constructor(config: PostHogConfig) {
-    // clean chars that aren't accepted by the http spec for cookie values
-    // https://datatracker.ietf.org/doc/html/rfc2616#section-2.2
     let token = ''
 
     if (config['token']) {
@@ -85,7 +80,6 @@ export class PostHogPersistence {
 
   properties(): Properties {
     const p: Properties = {}
-    // Filter out reserved properties
     _each(this.props, function (v, k) {
       if (k === ENABLED_FEATURE_FLAGS && typeof v === 'object') {
         const keys = Object.keys(v)
@@ -119,7 +113,6 @@ export class PostHogPersistence {
   }
 
   remove(): void {
-    // remove both domain and subdomain cookies
     this.storage.remove(this.name, false)
     this.storage.remove(this.name, true)
   }
@@ -158,11 +151,6 @@ export class PostHogPersistence {
     }
     return false
   }
-
-  /**
-   * @param {Object} props
-   * @param {number=} days
-   */
 
   register(props: Properties, days?: number): boolean {
     if (_isObject(props)) {

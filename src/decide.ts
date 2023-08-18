@@ -83,12 +83,12 @@ export class Decide {
 
           loadScript(scriptUrl, (err) => {
             if (err) {
-              console.error(`Error while initializing PostHog app with config id ${id}`, err)
+              console.error(err)
             }
           })
         }
       } else if (response['siteApps'].length > 0) {
-        console.error('PostHog site apps are disabled. Enable the "opt_in_site_apps" config to proceed.')
+        console.error('出错啦')
       }
     }
   }

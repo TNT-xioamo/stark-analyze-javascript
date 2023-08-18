@@ -62,13 +62,6 @@ export declare type recordOptions<T> = {
   // errorHandler?: ErrorHandler
 }
 
-/*
- * 检查数据有效负载是否接近 5mb。 如果是，它会检查数据
- * 数据 URI（可能是造成大负载的罪魁祸首）。 如果它找到数据 URI，它会替换
- * 将其与通用图像（如果它是图像）一起使用或将其删除。
- * @data {object} rr-web 数据对象
- * @returns {object} rr-web数据对象，其中数据uri被过滤掉
- */
 export function ensureMaxMessageSize(data: eventWithTime): { event: eventWithTime; size: number } {
   let stringifiedData = JSON.stringify(data)
 
@@ -101,7 +94,6 @@ export function truncateLargeConsoleLogs(_event: eventWithTime) {
     typeof event.data === 'object' &&
     event.data.plugin === CONSOLE_LOG_PLUGIN_NAME
   ) {
-    // Note: event.data.payload.payload comes from rr-web, and is an array of strings
     if (event.data.payload.payload.length > MAX_STRINGS_PER_LOG) {
       event.data.payload.payload = event.data.payload.payload.slice(0, MAX_STRINGS_PER_LOG)
       event.data.payload.payload.push('...[truncated]')
@@ -109,7 +101,7 @@ export function truncateLargeConsoleLogs(_event: eventWithTime) {
     const updatedPayload = []
     for (let i = 0; i < event.data.payload.payload.length; i++) {
       if (
-        event.data.payload.payload[i] && // Value can be null
+        event.data.payload.payload[i] && // 可以是value
         event.data.payload.payload[i].length > MAX_STRING_SIZE
       ) {
         updatedPayload.push(event.data.payload.payload[i].slice(0, MAX_STRING_SIZE) + '...[truncated]')

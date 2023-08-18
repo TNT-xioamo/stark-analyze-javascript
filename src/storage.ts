@@ -5,7 +5,6 @@ import { DISTINCT_ID, SESSION_ID } from './constants'
 
 const DOMAIN_MATCH_REGEX = /[a-z0-9][a-z0-9-]+\.[a-z.]{2,6}$/i
 
-// Methods partially borrowed from quirksmode.org/js/cookies.html
 export const cookieStore: PersistentStore = {
   is_supported: () => true,
 
@@ -35,7 +34,7 @@ export const cookieStore: PersistentStore = {
     try {
       cookie = JSON.parse(cookieStore.get(name)) || {}
     } catch (err) {
-      // noop
+      console.error(err)
     }
     return cookie
   },
@@ -47,7 +46,6 @@ export const cookieStore: PersistentStore = {
         secure = ''
 
       if (cross_subdomain) {
-        // NOTE: Could we use this for cross domain tracking?
         const matches = document.location.hostname.match(DOMAIN_MATCH_REGEX),
           domain = matches ? matches[0] : ''
 
@@ -107,7 +105,7 @@ export const localStore: PersistentStore = {
       supported = false
     }
     if (!supported) {
-      logger.error('localStorage unsupported; falling back to cookie store')
+      logger.error('supported')
     }
 
     _localStorage_supported = supported
@@ -131,7 +129,7 @@ export const localStore: PersistentStore = {
     try {
       return JSON.parse(localStore.get(name)) || {}
     } catch (err) {
-      // noop
+      console.error(err)
     }
     return null
   },
@@ -153,9 +151,6 @@ export const localStore: PersistentStore = {
   },
 }
 
-// Use localstorage for most data but still use cookie for COOKIE_PERSISTED_PROPERTIES
-// This solves issues with cookies having too much data in them causing headers too large
-// Also makes sure we don't have to send a ton of data to the server
 const COOKIE_PERSISTED_PROPERTIES = [DISTINCT_ID, SESSION_ID]
 
 export const localPlusCookieStore: PersistentStore = {
@@ -164,14 +159,13 @@ export const localPlusCookieStore: PersistentStore = {
     try {
       let extend: Properties = {}
       try {
-        // See if there's a cookie stored with data.
         extend = cookieStore.parse(name) || {}
       } catch (err) {}
       const value = _extend(extend, JSON.parse(localStore.get(name) || '{}'))
       localStore.set(name, value)
       return value
     } catch (err) {
-      // noop
+      //
     }
     return null
   },
@@ -206,14 +200,13 @@ export const localPlusCookieStore: PersistentStore = {
 
 const memoryStorage: Properties = {}
 
-// Storage that only lasts the length of the pageview if we don't want to use cookies
 export const memoryStore: PersistentStore = {
   is_supported: function () {
     return true
   },
 
   error: function (msg) {
-    logger.error('memoryStorage error: ' + msg)
+    logger.error('error: ' + msg)
   },
 
   get: function (name) {
@@ -237,7 +230,6 @@ let sessionStorageSupported: boolean | null = null
 export const resetSessionStorageSupported = () => {
   sessionStorageSupported = null
 }
-// Storage that only lasts the length of a tab/window. Survives page refreshes
 export const sessionStore: PersistentStore = {
   is_supported: function () {
     if (sessionStorageSupported !== null) {

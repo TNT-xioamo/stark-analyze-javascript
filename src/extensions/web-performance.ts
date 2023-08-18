@@ -3,12 +3,10 @@ import { PostHog } from '../posthog-core'
 import { DecideResponse, NetworkRequest } from '../types'
 
 const PERFORMANCE_EVENTS_MAPPING: { [key: string]: number } = {
-  // BASE_PERFORMANCE_EVENT_COLUMNS
   entryType: 0,
   timeOrigin: 1,
   name: 2,
 
-  // RESOURCE_EVENT_COLUMNS
   startTime: 3,
   redirectStart: 4,
   redirectEnd: 5,
@@ -30,7 +28,6 @@ const PERFORMANCE_EVENTS_MAPPING: { [key: string]: number } = {
   responseStatus: 21,
   transferSize: 22,
 
-  // LARGEST_CONTENTFUL_PAINT_EVENT_COLUMNS
   element: 23,
   renderTime: 24,
   loadTime: 25,
@@ -38,7 +35,6 @@ const PERFORMANCE_EVENTS_MAPPING: { [key: string]: number } = {
   id: 27,
   url: 28,
 
-  // NAVIGATION_EVENT_COLUMNS
   domComplete: 29,
   domContentLoadedEvent: 30,
   domInteractive: 31,
@@ -52,12 +48,9 @@ const PERFORMANCE_EVENTS_MAPPING: { [key: string]: number } = {
   duration: 39,
   timestamp: 40,
 
-  // NOTE: CURRENTLY UNSUPPORTED
-  // EVENT_TIMING_EVENT_COLUMNS
   // processingStart: null,
   // processingEnd: null,
 
-  // MARK_AND_MEASURE_EVENT_COLUMNS
   // detail: null,
 }
 
@@ -72,7 +65,6 @@ const ENTRY_TYPES_TO_OBSERVE = [
 ]
 
 const PERFORMANCE_INGESTION_ENDPOINT = '/e/'
-// 不要监视 posthog 路径，因为事件会导致性能事件 😱
 const POSTHOG_PATHS_TO_IGNORE = ['/s/', PERFORMANCE_INGESTION_ENDPOINT]
 
 export class WebPerformanceObserver {
@@ -153,7 +145,6 @@ export class WebPerformanceObserver {
   }
 
   _capturePerformanceEvent(event: PerformanceEntry) {
-    // NOTE: We don't want to capture our own request events.
     if (event.name.indexOf(this.instance.get_config('api_host')) === 0) {
       const path = event.name.replace(this.instance.get_config('api_host'), '')
 
@@ -226,10 +217,5 @@ export class WebPerformanceObserver {
   }
 }
 
-/**
- *  检查此 PerformanceEntry 是否是 PerformanceResourceTiming 或 PerformanceNavigationTiming
- *  NB PerformanceNavigationTiming 扩展了 PerformanceResourceTiming
- *  这里不关心它实现哪个接口，因为都暴露了 `serverTimings`
- */
 const exposesServerTiming = (event: PerformanceEntry): event is PerformanceResourceTiming =>
   event.entryType === 'navigation' || event.entryType === 'resource'

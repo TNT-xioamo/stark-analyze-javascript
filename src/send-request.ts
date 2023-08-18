@@ -100,7 +100,6 @@ export const xhr = ({
           onXHRError(req)
         }
 
-        // don't retry certain errors
         if ([401, 403, 404, 500].indexOf(req.status) < 0) {
           retryQueue.enqueue({
             url,

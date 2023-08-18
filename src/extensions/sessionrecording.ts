@@ -21,9 +21,9 @@ import { logger, loadScript, _timestamp } from '../utils'
 
 const BASE_ENDPOINT = '/s/'
 
-export const RECORDING_IDLE_ACTIVITY_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
-export const RECORDING_MAX_EVENT_SIZE = 1024 * 1024 * 0.9 // ~1mb (with some wiggle room)
-export const RECORDING_BUFFER_TIMEOUT = 2000 // 2 seconds
+export const RECORDING_IDLE_ACTIVITY_TIMEOUT_MS = 5 * 60 * 1000
+export const RECORDING_MAX_EVENT_SIZE = 1024 * 1024 * 0.9
+export const RECORDING_BUFFER_TIMEOUT = 2000
 export const SESSION_RECORDING_BATCH_KEY = 'sessionRecording'
 
 enum IncrementalSource {
@@ -211,7 +211,6 @@ export class SessionRecording {
     const isUserInteraction = this._isInteractiveEvent(event)
 
     if (!isUserInteraction && !this.isIdle) {
-      // We check if the lastActivityTimestamp is old enough to go idle
       if (event.timestamp - this.lastActivityTimestamp > RECORDING_IDLE_ACTIVITY_TIMEOUT_MS) {
         this.isIdle = true
       }
@@ -287,9 +286,7 @@ export class SessionRecording {
     }
 
     if (!this.rrwebRecord) {
-      logger.error(
-        'onScriptLoaded was called but rrwebRecord is not available. This indicates something has gone wrong.'
-      )
+      logger.error('出现啦一些问题，请检查程序是否正常，或者稍后再试。')
       return
     }
 
@@ -327,7 +324,6 @@ export class SessionRecording {
       }
     })
 
-    // We reset the last activity timestamp, resetting the idle timer
     this.lastActivityTimestamp = Date.now()
     this.isIdle = false
   }
@@ -391,7 +387,7 @@ export class SessionRecording {
   }
 
   private _captureSnapshotBuffered(properties: Properties) {
-    const additionalBytes = 2 + (this.buffer?.data.length || 0) // 2 bytes for the array brackets and 1 byte for each comma
+    const additionalBytes = 2 + (this.buffer?.data.length || 0)
     if (
       !this.buffer ||
       this.buffer.size + properties.$snapshot_bytes + additionalBytes > RECORDING_MAX_EVENT_SIZE ||

@@ -11,7 +11,6 @@ test('person properties set in identify() with new distinct_id are sent to decid
 
   await waitFor(() => {
     expect(getRequests(token)['/decide/']).toEqual([
-      // This is the initial call to the decide endpoint on PostHog init.
       {
         distinct_id: anonymousId,
         groups: {},
@@ -22,14 +21,12 @@ test('person properties set in identify() with new distinct_id are sent to decid
 
   resetRequests(token)
 
-  // Person properties set here should also be sent to the decide endpoint.
   posthog.identify('test-id', {
     email: 'test@email.com',
   })
 
   await waitFor(() => {
     expect(getRequests(token)['/decide/']).toEqual([
-      // Then we have another decide call triggered by the call to
       // `identify()`.
       {
         $anon_distinct_id: anonymousId,
@@ -52,7 +49,6 @@ test('person properties set in identify() with the same distinct_id are sent to 
 
   await waitFor(() => {
     expect(getRequests(token)['/decide/']).toEqual([
-      // This is the initial call to the decide endpoint on PostHog init.
       {
         distinct_id: anonymousId,
         groups: {},
@@ -63,13 +59,10 @@ test('person properties set in identify() with the same distinct_id are sent to 
 
   resetRequests(token)
 
-  // First we identify with a new distinct_id but with no properties set
   posthog.identify('test-id')
 
-  // By this point we should have already called `/decide/` twice.
   await waitFor(() => {
     expect(getRequests(token)['/decide/']).toEqual([
-      // Then we have another decide call triggered by the first call to
       // `identify()`.
       {
         $anon_distinct_id: anonymousId,
@@ -83,8 +76,6 @@ test('person properties set in identify() with the same distinct_id are sent to 
 
   resetRequests(token)
 
-  // Then we identify again, but with the same distinct_id and with some
-  // properties set.
   posthog.identify('test-id', { email: 'test@email.com' })
 
   await waitFor(() => {

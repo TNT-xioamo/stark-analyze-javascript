@@ -1,14 +1,5 @@
 import { SESSION_RECORDING_BATCH_KEY } from './extensions/sessionrecording'
 
-/**
- * Really a 429 response should have a `Retry-After` header which is either a date string,
- * or the number of seconds to wait before retrying
- *
- * But we can rate limit endpoints differently, so send custom header per endpoint
- * The endpoints are configurable, so we tie the headers/retries to specific batch keys
- *
- * And only support a number of seconds to wait before retrying
- */
 const supportedRetryHeaders = {
   'X-PostHog-Retry-After-Recordings': SESSION_RECORDING_BATCH_KEY,
   'X-PostHog-Retry-After-Events': 'events',
