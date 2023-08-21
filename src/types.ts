@@ -38,6 +38,7 @@ export interface PostHogConfig {
   token: string
   autocapture: boolean | AutocaptureConfig
   rageclick: boolean
+  page_remain: boolean
   cross_subdomain_cookie: boolean
   persistence: 'localStorage' | 'cookie' | 'memory' | 'localStorage+cookie' | 'sessionStorage'
   persistence_name: string

@@ -59,6 +59,7 @@ import { ExceptionObserver } from './extensions/exceptions/exception-autocapture
 import { PostHogSurveys, SurveyCallback } from './posthog-surveys'
 import { RateLimiter } from './rate-limiter'
 import { uuidv7 } from './uuidv7'
+import { pageViewDataManager } from './page-view-storage'
 
 enum InitType {
   INIT_MODULE = 0,
@@ -94,6 +95,7 @@ const defaultConfig = (): PostHogConfig => ({
   token: '',
   autocapture: true,
   rageclick: true,
+  page_remain: true,
   cross_subdomain_cookie: document?.location?.hostname?.indexOf('herokuapp.com') === -1,
   persistence: 'cookie',
   persistence_name: '',
@@ -431,7 +433,10 @@ export class PostHog {
     }
     window.addEventListener &&
       window.addEventListener('onpagehide' in self ? 'pagehide' : 'unload', this._handle_unload.bind(this))
-    window.addEventListener && window.addEventListener('visibilitychange', this._handle_visibility_change.bind(this))
+    console.error(this.get_config('page_remain'))
+    if (this.get_config('page_remain')) {
+      window.addEventListener && window.addEventListener('visibilitychange', this._handle_visibility_change.bind(this))
+    }
     updateInitComplete('syncCode')()
   }
 
@@ -729,6 +734,16 @@ export class PostHog {
     if (this.get_config('debug')) {
       logger.log('stark send', data)
     }
+
+    console.error('event_name', data)
+
+    if (event_name === '$pageview' || event_name === '$pagehidden') {
+      data = pageViewDataManager(data, event_name)
+    }
+    if (event_name === '$pageshow') {
+      return pageViewDataManager(data, event_name)
+    }
+    console.error(event_name, data)
     // const jsonData = JSON.stringify(data)
 
     const url = this.get_config('api_host') + (options.endpoint || '/e/')
@@ -784,6 +799,7 @@ export class PostHog {
     if (event_name === '$pageview') {
       properties['title'] = document.title
       properties['$page_id'] = document.getElementById(this.config.page_id)?.innerText
+      properties['$event_type'] = 'pageload'
     }
 
     if (event_name === '$performance_event') {
