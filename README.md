@@ -16,7 +16,6 @@ ID 为 11213 的项目。请参阅 testcafe 测试以了解如何覆盖这些 if
 到该项目。 您需要将 `POSTHOG_API_KEY` 设置为您的个人 API 密钥，并且
 `POSTHOG_PROJECT_KEY` 为您正在使用的项目的密钥。
 
-您还需要注册 [BrowserStack](https://www.browserstack.com/)。
 请注意，如果您使用 CodeSpaces，这些变量将已经可用
 在你的 shell 环境变量中。
 
