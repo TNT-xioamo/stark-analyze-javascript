@@ -933,7 +933,6 @@ export class PostHog {
    */
   identify(new_distinct_id?: string, userPropertiesToSet?: Properties, userPropertiesToSetOnce?: Properties): void {
     if (!new_distinct_id) {
-      console.error('Unique user id has not been set in posthog.identify')
       return
     }
 
@@ -1003,7 +1002,6 @@ export class PostHog {
    */
   group(groupType: string, groupKey: string, groupPropertiesToSet?: Properties): void {
     if (!groupType || !groupKey) {
-      console.error('posthog.group requires a group type and group key')
       return
     }
 
@@ -1378,7 +1376,6 @@ _safewrap_class(PostHog, ['identify'])
 
 const instances: Record<string, PostHog> = {}
 const extend_mp = function () {
-  // add all the sub posthog instances
   _each(instances, function (instance, name) {
     if (name !== PRIMARY_INSTANCE_NAME) {
       posthog_master[name] = instance
@@ -1453,11 +1450,12 @@ const add_dom_loaded_handler = function () {
 }
 
 export function init_from_snippet(): void {
+  // 后备文件
   init_type = InitType.INIT_SNIPPET
-  if (_isUndefined((window as any).posthog)) {
-    ;(window as any).posthog = []
+  if (_isUndefined((window as any).starkhog)) {
+    ;(window as any).starkhog = []
   }
-  posthog_master = (window as any).posthog
+  posthog_master = (window as any).starkhog
 
   if (posthog_master['__loaded'] || (posthog_master['config'] && posthog_master['persistence'])) {
     return
