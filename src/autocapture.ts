@@ -7,11 +7,11 @@ import {
   _isUndefined,
   _register_event,
   _safewrap_instance_methods,
-  logger,
 } from './utils'
 import {
   getClassName,
   getSafeText,
+  getSafeImg,
   isElementNode,
   isSensitiveElement,
   isTag,
@@ -230,6 +230,9 @@ const autocapture = {
         } else {
           elementsJson[0]['$el_text'] = getSafeText(target)
         }
+        if (instance.get_config('mask_bg_img') && target.tagName.toLowerCase() === 'div') {
+          getSafeImg(target) && (elementsJson[0]['$el_bgc'] = getSafeImg(target))
+        }
       }
 
       if (href) {
@@ -299,7 +302,7 @@ const autocapture = {
     this._setIsAutocaptureEnabled(instance)
 
     this._initializedTokens.push(token)
-    console.error('afterDecideResponse', response['config'])
+    console.log('afterDecideResponse', response['config'])
     this._customProperties = response['custom_properties']
     this._addDomEventHandlers(instance)
     // instance['__autocapture'] = false

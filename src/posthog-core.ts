@@ -133,6 +133,7 @@ const defaultConfig = (): PostHogConfig => ({
   session_recording: {},
   mask_all_element_attributes: false,
   mask_all_text: false,
+  mask_bg_img: true,
   advanced_disable_decide: false,
   advanced_disable_feature_flags: false,
   advanced_disable_feature_flags_on_first_load: false,
@@ -433,7 +434,6 @@ export class PostHog {
     }
     window.addEventListener &&
       window.addEventListener('onpagehide' in self ? 'pagehide' : 'unload', this._handle_unload.bind(this))
-    console.error(this.get_config('page_remain'))
     if (this.get_config('page_remain')) {
       window.addEventListener && window.addEventListener('visibilitychange', this._handle_visibility_change.bind(this))
     }

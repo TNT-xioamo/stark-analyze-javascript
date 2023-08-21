@@ -13,9 +13,6 @@ export class Decide {
   }
 
   call(): void {
-    /*
-      调用 /decide 端点来获取自动捕获、会话记录、功能标志和压缩选项。
-    */
     const json_data = JSON.stringify({
       token: this.instance.get_config('token'),
       distinct_id: this.instance.get_distinct_id(),

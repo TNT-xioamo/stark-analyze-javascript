@@ -43,6 +43,14 @@ export function getSafeText(el: Element): string {
   return _trim(elText)
 }
 
+export function getSafeImg(el: Element): string {
+  let el_bg_img = ''
+  const c = el as HTMLElement
+  const style = getComputedStyle(c)
+  el_bg_img = style.backgroundImage
+  return el_bg_img
+}
+
 export function isElementNode(el: Element | undefined | null): el is HTMLElement {
   return !!el && el.nodeType === 1
 }
