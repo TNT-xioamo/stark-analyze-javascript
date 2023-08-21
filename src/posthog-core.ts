@@ -735,8 +735,6 @@ export class PostHog {
       logger.log('stark send', data)
     }
 
-    console.error('event_name', data)
-
     if (event_name === '$pageview' || event_name === '$pagehidden') {
       data = pageViewDataManager(data, event_name)
     }

@@ -13,7 +13,7 @@ export const pageViewDataManager = (data: any, event_type: string) => {
     }
     const $stay_time = Number(data.properties.$time) - Number(cu_obj.properties.$time)
     data['properties']['$stay_time'] = $stay_time
-    data['properties']['$event_type'] = event_type
+    data['properties']['$event_type'] = 'pageleave'
     sessionStore.remove('pageViewDataManager')
     return data
   }
