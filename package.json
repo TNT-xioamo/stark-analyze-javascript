@@ -1,7 +1,7 @@
 {
   "name": "stark-analyze-javascript",
   "version": "0.0.1",
-  "description": "stark-analyze-javascript allows you to automatically capture usage and send events to PostHog.",
+  "description": "stark-analyze-javascript allows you to automatically capture usage and send events to StarkHog.",
   "repository": "https://github.com/TNT-xioamo/stark-analyze-javascript",
   "author": "Stark liuxingcoco@icloud.com",
   "license": "MIT",
