@@ -12,7 +12,7 @@
     <div>
       <input type="text">
       <div>普通div</div></div>
-      <button>按钮</button>
+      <button id="321">按钮</button>
       <a href="https://modelscope.cn/models/ZhipuAI/chatglm2-6b-32k/quickstart" target="_blank">a链接跳转</a></a>
       <textarea name="" id="" cols="30" rows="10"></textarea>
       <div class="bg-img"></div>
@@ -51,12 +51,12 @@
     },
     e.__SV = 1)
   } (document, window.starkhog || [])
-  starkhog.init('386251', {
+  starkhog.init('', {
     page_remain: false,
     mask_bg_img: true,
     hast_host: '',
     api_host: 'http://test2.easthome.com',
-    xhr_headers: { 'Authorization': 'token' },
+    xhr_headers: { 'Authorization': () => { window.sessionStorage.getItem('key') } },
   })
   /**
    * 自定义提交事件
@@ -65,6 +65,7 @@
    * @param {CaptureOptions} options
    * function starkhog.capture('')
   */
+  starkhog.capture('$liuxing', { event: 'ceshi', name: 'liuxing' })
   </script>
 <style>
   .bg-img {
