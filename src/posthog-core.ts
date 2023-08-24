@@ -96,7 +96,7 @@ const defaultConfig = (): PostHogConfig => ({
   autocapture: true,
   rageclick: true,
   page_remain: true,
-  cross_subdomain_cookie: document?.location?.hostname?.indexOf('herokuapp.com') === -1,
+  cross_subdomain_cookie: document?.location?.hostname?.indexOf('xingliu.com') === -1,
   persistence: 'cookie',
   persistence_name: '',
   cookie_name: '',
@@ -175,10 +175,11 @@ const create_phlib = function (
   }
 
   if (target && init_type === InitType.INIT_MODULE) {
+    console.error('InitType.INIT_MODULE ' + name)
     instance = target as any
   } else {
     if (target && !_isArray(target)) {
-      console.error('You have already initialized ' + name)
+      console.log('你已经初始化了 ' + name)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return
@@ -200,6 +201,7 @@ const create_phlib = function (
   instance.__autocapture = instance.get_config('autocapture')
   autocapture._setIsAutocaptureEnabled(instance)
   if (autocapture._isAutocaptureEnabled) {
+    // if (!autocapture._isAutocaptureEnabled) {
     instance.__autocapture = instance.get_config('autocapture')
     const num_buckets = 100
     const num_enabled_buckets = 100
@@ -311,6 +313,7 @@ export class PostHog {
    * @param {String} [name]
    */
   init(token: string, config?: Partial<PostHogConfig>, name?: string): PostHog | void {
+    console.log(18729321077)
     if (_isUndefined(name)) return
     if (name === PRIMARY_INSTANCE_NAME) return
 
@@ -505,7 +508,6 @@ export class PostHog {
 
   _handle_unload(): void {
     // event?.preventDefault()
-    console.error('_handle_unload', 'request_batching')
     if (!this.get_config('request_batching')) {
       if (this.get_config('capture_pageview') && this.get_config('capture_pageleave')) {
         this.capture('$pageleave', null, { transport: 'sendBeacon' })
@@ -523,10 +525,8 @@ export class PostHog {
 
   _handle_visibility_change(): void {
     if (document.visibilityState == 'hidden') {
-      console.error('_handle_visibility_change', '你别走哇')
       this.capture('$pagehidden')
     } else {
-      console.error('_handle_visibility_change', '你来啦哇')
       this.capture('$pageshow')
     }
   }
@@ -538,7 +538,7 @@ export class PostHog {
 
   __compress_and_send_json_request(url: string, jsonData: any, options: XHROptions, callback?: RequestCallback): void {
     const [data, _options] = compressData(decideCompression(this.compression), jsonData, options)
-    console.log('__compress_and_send_json_request', data)
+    console.log('__compress_and_send_json_request', jsonData)
     this._send_request(url, jsonData, _options, callback)
   }
 
@@ -693,7 +693,6 @@ export class PostHog {
     if (userOptedOut(this, false)) {
       return
     }
-
     options = options || __NOOPTIONS
     const transport = options['transport']
     if (transport) {
@@ -723,7 +722,6 @@ export class PostHog {
       event: event_name,
       properties: this._calculate_event_properties(event_name, properties || {}),
     }
-    console.error('capture_', data)
     if (event_name === '$identify') {
       data['$set'] = options['$set']
       data['$set_once'] = options['$set_once']
@@ -772,7 +770,7 @@ export class PostHog {
     const start_timestamp = this.persistence.remove_event_timer(event_name)
     let properties = { ...event_properties }
     properties['token'] = this.get_config('token')
-
+    properties['$form_type'] = event_name === '$pageview' ? 1 : event_name === '$autocapture' ? 2 : ''
     if (event_name === '$snapshot') {
       const persistenceProps = { ...this.persistence.properties(), ...this.sessionPersistence.properties() }
       properties['distinct_id'] = persistenceProps.distinct_id
@@ -1224,11 +1222,9 @@ export class PostHog {
     return name
   }
 
-  // 围绕 GDPR 选择加入/退出状态执行一些内务管理
   _gdpr_init(): void {
     const is_localStorage_requested = this.get_config('opt_out_capturing_persistence_type') === 'localStorage'
 
-    // try to convert opt-in/out cookies to localStorage if possible
     if (is_localStorage_requested && localStore.is_supported()) {
       if (!this.has_opted_in_capturing() && this.has_opted_in_capturing({ persistence_type: 'cookie' })) {
         this.opt_in_capturing({ enable_persistence: false })
@@ -1386,7 +1382,6 @@ const extend_mp = function () {
 const override_ph_init_func = function () {
   posthog_master['init'] = function (token?: string, config?: Partial<PostHogConfig>, name?: string) {
     if (name) {
-      // initialize a sub library
       if (!posthog_master[name]) {
         posthog_master[name] = instances[name] = create_phlib(token || '', config || {}, name, (instance: PostHog) => {
           posthog_master[name] = instances[name] = instance
@@ -1418,9 +1413,7 @@ const override_ph_init_func = function () {
 }
 
 const add_dom_loaded_handler = function () {
-  // 跨浏览器 DOM 加载支持
   function dom_loaded_handler() {
-    // 函数标志，只执行一次
     if ((dom_loaded_handler as any).done) {
       return
     }
@@ -1435,10 +1428,6 @@ const add_dom_loaded_handler = function () {
 
   if (document.addEventListener) {
     if (document.readyState === 'complete') {
-      // safari 4 可以在加载所有内容之前触发 DOMContentLoaded 事件
-      // 外部JS（包括这个文件）。 你会看到一些copypasta
-      // 在互联网上检查“完整”和“已加载”，但是
-      // “已加载” IE 浏览器事件
       dom_loaded_handler()
     } else {
       document.addEventListener('DOMContentLoaded', dom_loaded_handler, false)

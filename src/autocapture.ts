@@ -182,7 +182,6 @@ const autocapture = {
     }
 
     if (target && shouldCaptureDomEvent(target, e, this.config)) {
-      console.error('_captureEvent', target)
       const targetElementList = [target]
       let curEl = target
       while (curEl.parentNode && !isTag(curEl, 'body') && curEl.children.length < 2) {
@@ -284,7 +283,6 @@ const autocapture = {
     }
 
     this.rageclicks = new RageClick(instance.get_config('rageclick'))
-    console.error('isRageClick', this.rageclicks)
   },
 
   afterDecideResponse: function (response: DecideResponse, instance: PostHog): void {

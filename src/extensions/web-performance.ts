@@ -91,14 +91,12 @@ export class WebPerformanceObserver {
     }
 
     if (window?.PerformanceObserver?.supportedEntryTypes === undefined) {
-      logger.log(
-        'PostHog Performance observer not started because PerformanceObserver is not supported by this browser.'
-      )
+      logger.log('未启动性能观察')
       return
     }
 
     if (isLocalhost() && !this._forceAllowLocalhost) {
-      logger.log('PostHog Peformance observer not started because we are on localhost.')
+      logger.log('本机状态')
       return
     }
 

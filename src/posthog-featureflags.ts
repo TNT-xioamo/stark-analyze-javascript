@@ -109,7 +109,7 @@ export class PostHogFeatureFlags {
       }
     }
     if (!this._override_warning) {
-      console.warn('[PostHog] Overriding feature flags!', {
+      console.warn('flags!', {
         enabledFlags,
         overriddenFlags,
         finalFlags,
@@ -287,7 +287,7 @@ export class PostHogFeatureFlags {
 
     if (!existing_early_access_features || force_reload) {
       this.instance._send_request(
-        `${this.instance.get_config('api_host')}/api/early_access_features/?token=${this.instance.get_config('token')}`,
+        `${this.instance.get_config('api_host')}/api/server/?token=${this.instance.get_config('token')}`,
         {},
         { method: 'GET' },
         (response) => {

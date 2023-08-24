@@ -12,7 +12,7 @@
     <div>
       <input type="text">
       <div>普通div</div></div>
-      <button id="321">按钮</button>
+      <button id="btn">按钮</button>
       <a href="https://modelscope.cn/models/ZhipuAI/chatglm2-6b-32k/quickstart" target="_blank">a链接跳转</a></a>
       <textarea name="" id="" cols="30" rows="10"></textarea>
       <div class="bg-img"></div>
@@ -28,7 +28,7 @@
     e.__SV || (window.starkhog = e, e._i = [], e.init = function(i, s, a) {
       function g(t, e) {
         var o = e.split('.');
-        2 == o.length && (t = t[o[0]], e = o[1]),
+        2 == o.length && (t = t[o[0]], e = o[1])
         t[e] = function() {
           t.push([e].concat(Array.prototype.slice.call(arguments, 0)))
         }
@@ -46,17 +46,18 @@
       u.people.toString = function() {
         return u.toString(1) + '.people (stub)'
       },
-      o = 'capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing   has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload   reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys'.  split(' '), n = 0; n < o.length; n++) g(u, o[n]);
+      o = 'capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys'.split(' '), n = 0; n < o.length; n++) g(u, o[n])
       e._i.push([i, s, a])
     },
     e.__SV = 1)
   } (document, window.starkhog || [])
-  starkhog.init('', {
+  starkhog.init('adck', {
     page_remain: false,
-    mask_bg_img: true,
+    mask_bg_img: false,
     hast_host: '',
     api_host: 'http://test2.easthome.com',
-    xhr_headers: { 'Authorization': () => { window.sessionStorage.getItem('key') } },
+    xhr_authorization: window.sessionStorage.getItem('token'),
+    xhr_headers: { 'Authorization': window.sessionStorage.getItem('token') },
   })
   /**
    * 自定义提交事件
@@ -65,7 +66,11 @@
    * @param {CaptureOptions} options
    * function starkhog.capture('')
   */
-  starkhog.capture('$liuxing', { event: 'ceshi', name: 'liuxing' })
+  const btn = document.getElementById('btn')
+  btn.onclick = () => {
+    starkhog.starkhog.capture('$liuxing', { $elents: 18766523342 })
+    console.log(starkhog)
+  }
   </script>
 <style>
   .bg-img {

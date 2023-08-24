@@ -47,7 +47,6 @@ export class Decide {
       }, 500)
       return
     }
-    console.error('parseDecideResponse', response)
     this.instance.toolbar.afterDecideResponse(response)
     this.instance.sessionRecording?.afterDecideResponse(response)
     autocapture.afterDecideResponse(response, this.instance)
@@ -57,7 +56,7 @@ export class Decide {
     if (!this.instance.get_config('advanced_disable_feature_flags_on_first_load')) {
       this.instance.featureFlags.receivedFeatureFlags(response)
     }
-
+    console.error('parseDecideResponse', response)
     this.instance['compression'] = {}
     if (response['supportedCompression'] && !this.instance.get_config('disable_compression')) {
       const compression: Partial<Record<Compression, boolean>> = {}

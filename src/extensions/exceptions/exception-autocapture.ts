@@ -20,7 +20,7 @@ export class ExceptionObserver {
 
   private debugLog(...args: any[]) {
     if (this.instance.get_config('debug')) {
-      console.log('PostHog.js [PostHog.ExceptionObserver]', ...args)
+      console.log('debugger', ...args)
     }
   }
 
@@ -103,9 +103,9 @@ export class ExceptionObserver {
 
     if (this.isEnabled()) {
       this.startCapturing()
-      this.debugLog('Remote config for exception autocapture is enabled, starting', autocaptureExceptionsResponse)
+      this.debugLog('debugger', autocaptureExceptionsResponse)
     } else {
-      this.debugLog('Remote config for exception autocapture is disabled, not starting', autocaptureExceptionsResponse)
+      this.debugLog('debugger', autocaptureExceptionsResponse)
     }
   }
 
@@ -113,7 +113,7 @@ export class ExceptionObserver {
     const errorProperties = errorToProperties(args)
 
     if (this.errorsToIgnore.some((regex) => regex.test(errorProperties.$exception_message || ''))) {
-      this.debugLog('Ignoring exception based on remote config', errorProperties)
+      this.debugLog('debugger', errorProperties)
       return
     }
 

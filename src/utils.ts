@@ -20,7 +20,6 @@ const nativeForEach = ArrayProto.forEach,
 const logger = {
   log: function (...args: any[]) {
     if (Config.DEBUG && !_isUndefined(window.console) && window.console) {
-      // Don't log PostHog debug messages in rrweb
       const log =
         '__rrweb_original__' in window.console.log
           ? (window.console.log as any)['__rrweb_original__']
@@ -54,7 +53,6 @@ const logger = {
   critical: function (..._args: any[]) {
     if (!_isUndefined(window.console) && window.console) {
       const args = ['PostHog error:', ..._args]
-      // Don't log PostHog debug messages in rrweb
       const error =
         '__rrweb_original__' in window.console.error
           ? (window.console.error as any)['__rrweb_original__']
@@ -255,7 +253,7 @@ export const _safewrap = function <F extends (...args: any[]) => any = (...args:
       // @ts-ignore
       return f.apply(this, args)
     } catch (e) {
-      logger.critical('Implementation error. Please turn on debug and contact support@posthog.com.')
+      logger.critical('Implementation error. Please turn on debug and contact xingliu@icd.com')
       logger.critical(e)
     }
   } as F
@@ -508,7 +506,7 @@ export const _register_event = (function () {
       element.addEventListener(type, handler, !!useCapture)
     } else {
       const ontype = 'on' + type
-      const old_handler = (element as any)[ontype] // can be undefined
+      const old_handler = (element as any)[ontype] // undefined
       ;(element as any)[ontype] = makeHandler(element, handler, old_handler)
     }
   }
