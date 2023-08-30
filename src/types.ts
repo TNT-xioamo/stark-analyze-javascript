@@ -68,6 +68,7 @@ export interface PostHogConfig {
   respect_dnt: boolean
   property_blacklist: string[]
   xhr_headers: { [header_name: string]: string }
+  on_xhr_auth: () => void
   on_xhr_error: (failedRequest: XMLHttpRequest) => void
   inapp_protocol: string
   inapp_link_new_window: boolean
@@ -176,6 +177,7 @@ export interface QueuedRequestData {
 export interface XHRParams extends QueuedRequestData {
   retryQueue: RetryQueue
   onXHRError: (req: XMLHttpRequest) => void
+  onXHRAuth: () => void
   timeout?: number
   onRateLimited?: (req: XMLHttpRequest) => void
 }

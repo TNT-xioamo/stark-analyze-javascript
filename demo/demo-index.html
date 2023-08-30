@@ -56,8 +56,8 @@
     mask_bg_img: false,
     hast_host: '',
     api_host: 'http://test2.easthome.com',
-    xhr_authorization: window.sessionStorage.getItem('token'),
-    xhr_headers: { 'Authorization': window.sessionStorage.getItem('token') },
+    on_xhr_auth: window.sessionStorage.getItem('token'),
+    xhr_headers: {},
   })
   /**
    * 自定义提交事件

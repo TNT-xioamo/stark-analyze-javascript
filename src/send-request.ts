@@ -65,6 +65,7 @@ export const xhr = ({
   retriesPerformedSoFar,
   retryQueue,
   onXHRError,
+  onXHRAuth,
   timeout = 10000,
   onRateLimited,
 }: XHRParams) => {
@@ -79,7 +80,10 @@ export const xhr = ({
     // req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
     req.setRequestHeader('Content-Type', 'application/json;charset=utf-8')
   }
-
+  if (typeof onXHRAuth === 'function') {
+    const auth: string | any = onXHRAuth()
+    auth && req.setRequestHeader('Authorization', auth)
+  }
   req.timeout = timeout
   req.withCredentials = true
   req.onreadystatechange = () => {

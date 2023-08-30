@@ -126,6 +126,7 @@ const defaultConfig = (): PostHogConfig => ({
   respect_dnt: false,
   sanitize_properties: null,
   xhr_headers: {}, // { header: value, header2: value }
+  on_xhr_auth: () => void 0,
   inapp_protocol: '//',
   inapp_link_new_window: false,
   request_batching: true,
@@ -586,6 +587,7 @@ export class PostHog {
           retriesPerformedSoFar: 0,
           retryQueue: this._retryQueue,
           onXHRError: this.get_config('on_xhr_error'),
+          onXHRAuth: this.get_config('on_xhr_auth'),
           onRateLimited: this.rateLimiter.on429Response,
         })
       } catch (e) {
