@@ -21,14 +21,16 @@ export class RetryQueue extends RequestQueueScaffold {
   isPolling: boolean
   areWeOnline: boolean
   onXHRError: (failedRequest: XMLHttpRequest) => void
+  onXHRAuth: () => void
   rateLimiter: RateLimiter
 
-  constructor(onXHRError: (failedRequest: XMLHttpRequest) => void, rateLimiter: RateLimiter) {
+  constructor(onXHRError: (failedRequest: XMLHttpRequest) => void, onXHRAuth: () => void, rateLimiter: RateLimiter) {
     super()
     this.isPolling = false
     this.queue = []
     this.areWeOnline = true
     this.onXHRError = onXHRError
+    this.onXHRAuth = onXHRAuth
     this.rateLimiter = rateLimiter
 
     if (typeof window !== 'undefined' && 'onLine' in window.navigator) {
@@ -124,6 +126,7 @@ export class RetryQueue extends RequestQueueScaffold {
       callback,
       retryQueue: this,
       onXHRError: this.onXHRError,
+      onXHRAuth: this.onXHRAuth,
       onRateLimited: this.rateLimiter.on429Response,
     })
   }

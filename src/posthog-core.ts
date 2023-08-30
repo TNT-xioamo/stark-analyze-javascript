@@ -367,7 +367,7 @@ export class PostHog {
     this.persistence = new PostHogPersistence(this.config)
 
     this._requestQueue = new RequestQueue(this._handle_queued_event.bind(this))
-    this._retryQueue = new RetryQueue(this.get_config('on_xhr_error'), this.rateLimiter)
+    this._retryQueue = new RetryQueue(this.get_config('on_xhr_error'), this.get_config('on_xhr_auth'), this.rateLimiter)
     this.__captureHooks = []
     this.__request_queue = []
 
