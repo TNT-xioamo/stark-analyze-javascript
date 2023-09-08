@@ -82,9 +82,9 @@ const autocapture = {
     }
     if (autocaptureCompatibleElements.indexOf(tag_name) > -1 && !maskText) {
       if (tag_name.toLowerCase() === 'a' || tag_name.toLowerCase() === 'button') {
-        props['$el_text'] = getDirectAndNestedSpanText(elem)
+        props['el_text'] = getDirectAndNestedSpanText(elem)
       } else {
-        props['$el_text'] = getSafeText(elem)
+        props['el_text'] = getSafeText(elem)
       }
     }
 
@@ -235,7 +235,7 @@ const autocapture = {
       }
 
       if (href) {
-        elementsJson[0]['attr__href'] = href
+        elementsJson[0]['$attr__href'] = href
       }
 
       if (explicitNoCapture) {
