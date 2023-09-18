@@ -1,5 +1,6 @@
 import Config from './config'
 import { Breaker, EventHandler, Properties } from './types'
+import Fingerprint2 from 'fingerprintjs2'
 import { uuidv7 } from './uuidv7'
 
 const ArrayProto = Array.prototype
@@ -851,6 +852,13 @@ export const _info = {
         $browser_version: _info.browserVersion(userAgent, navigator.vendor, (win as any).opera),
       }
     )
+  },
+  browser_properties: function () {
+    let m = void 0
+    Fingerprint2.get((components: any) => {
+      const values = components.map((component: any) => component.value)
+      m = Fingerprint2.x64hash128(values.join(''), 31)
+    })
   },
 }
 

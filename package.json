@@ -29,7 +29,8 @@
     "react/package.json"
   ],
   "dependencies": {
-    "fflate": "^0.4.1"
+    "fflate": "^0.4.1",
+    "fingerprintjs2": "^2.1.4"
   },
   "devDependencies": {
     "@babel/core": "7.18.9",
