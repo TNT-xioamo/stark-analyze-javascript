@@ -9,8 +9,8 @@ const EXCEPTION_INGESTION_ENDPOINT = '/e/'
 export class ExceptionObserver {
   instance: PostHog
   remoteEnabled: boolean | undefined
-  private originalOnErrorHandler: typeof window['onerror'] | null | undefined = undefined
-  private originalOnUnhandledRejectionHandler: typeof window['onunhandledrejection'] | null | undefined = undefined
+  private originalOnErrorHandler: (typeof window)['onerror'] | null | undefined = undefined
+  private originalOnUnhandledRejectionHandler: (typeof window)['onunhandledrejection'] | null | undefined = undefined
 
   private errorsToIgnore: RegExp[] = []
 
