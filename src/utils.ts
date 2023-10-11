@@ -854,7 +854,7 @@ export const _info = {
     )
   },
   browser_properties: function () {
-    let m = void 0
+    let m: any = void 0
     Fingerprint2.get((components: any) => {
       const values = components.map((component: any) => component.value)
       m = Fingerprint2.x64hash128(values.join(''), 31)
