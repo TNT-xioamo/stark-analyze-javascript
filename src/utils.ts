@@ -853,7 +853,13 @@ export const _info = {
     )
   },
   browser_properties: function () {
-    FingerprintJS.load
+    const fpPromise = FingerprintJS.load()
+    fpPromise
+      .then((fp) => fp.get())
+      .then((result) => {
+        const visitorId = result.visitorId
+        console.log(visitorId)
+      })
   },
 }
 
