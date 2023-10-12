@@ -37,18 +37,3 @@
   })
   </script>
  ```
- - Vue React 引入代码
- ``` js
-  <!-- Vue -->
-  <script src="https://unpkg.com/@posthog/plugin-vue"></script>
-  <script>
-    Vue.use(PostHog.Vue)
-    PostHog.Vue.init('<ph_project_api_key>', {api_host: '<ph_instance_address>'})
-  </script>
-
-  <!-- React -->
-  <script src="https://unpkg.com/@posthog/plugin-react"></script> 
-  <script>
-    PostHog.React.init('<ph_project_api_key>', {api_host: '<ph_instance_address>'})
-  </script>
- ```

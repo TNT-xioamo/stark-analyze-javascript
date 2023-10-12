@@ -1,6 +1,6 @@
 import Config from './config'
 import { Breaker, EventHandler, Properties } from './types'
-import Fingerprint2 from 'fingerprintjs2'
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { uuidv7 } from './uuidv7'
 
 const ArrayProto = Array.prototype
@@ -653,7 +653,6 @@ export const _info = {
     } else if (_includes(user_agent, 'IEMobile') || _includes(user_agent, 'WPDesktop')) {
       return 'Internet Explorer Mobile'
     } else if (_includes(user_agent, 'SamsungBrowser/')) {
-      // https://developer.samsung.com/internet/user-agent-string-format
       return 'Samsung Internet'
     } else if (_includes(user_agent, 'Edge') || _includes(user_agent, 'Edg/')) {
       return 'Microsoft Edge'
@@ -854,11 +853,7 @@ export const _info = {
     )
   },
   browser_properties: function () {
-    let m: any = void 0
-    Fingerprint2.get((components: any) => {
-      const values = components.map((component: any) => component.value)
-      m = Fingerprint2.x64hash128(values.join(''), 31)
-    })
+    FingerprintJS.load
   },
 }
 

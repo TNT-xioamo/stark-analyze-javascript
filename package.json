@@ -29,8 +29,8 @@
     "react/package.json"
   ],
   "dependencies": {
-    "fflate": "^0.4.1",
-    "fingerprintjs2": "^2.1.4"
+    "@fingerprintjs/fingerprintjs": "^4.1.0",
+    "fflate": "^0.4.1"
   },
   "devDependencies": {
     "@babel/core": "7.18.9",
@@ -44,7 +44,6 @@
     "@rrweb/types": "^2.0.0-alpha.8",
     "@sentry/types": "7.37.2",
     "@testing-library/dom": "^9.3.0",
-    "@types/fingerprintjs2": "^2.0.0",
     "@types/jest": "^29.5.1",
     "@types/react-dom": "^18.0.10",
     "@types/uuid": "^9.0.1",
