@@ -4,7 +4,7 @@ export const pageLoadUseIp = (callback?: any) => {
   xhr.onreadystatechange = () => {
     if (xhr.readyState == 4 && xhr.status == 200) {
       const response = JSON.parse(xhr.responseText)
-      const ip = response.ip
+      const ip = response.ip || '127.0.0.1'
       callback && callback(ip)
     }
   }
