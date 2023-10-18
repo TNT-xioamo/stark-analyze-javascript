@@ -1,6 +1,8 @@
 import Config from './config'
 import { Breaker, EventHandler, Properties } from './types'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
+import { sessionStore } from './storage'
+import { pageViewDataManager } from './page-view-storage'
 import { uuidv7 } from './uuidv7'
 
 const ArrayProto = Array.prototype
@@ -835,6 +837,10 @@ export const _info = {
         $lib_version: Config.LIB_VERSION,
         $insert_id: Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10),
         $time: _timestamp(),
+        $title: win?.document.title,
+        $referrer: win?.document.referrer,
+        $ip: sessionStore.get('ph_ip'),
+        $visitor_id: sessionStore.get('ph_visitor_id'),
       }
     )
   },
@@ -852,15 +858,30 @@ export const _info = {
       }
     )
   },
-  browser_properties: function () {
-    const fpPromise = FingerprintJS.load()
-    fpPromise
-      .then((fp) => fp.get())
-      .then((result) => {
-        const visitorId = result.visitorId
-        console.log(visitorId)
-      })
-  },
+}
+
+export const _browser_properties = function () {
+  const fpPromise = FingerprintJS.load()
+  fpPromise
+    .then((fp) => fp.get())
+    .then((result) => {
+      const visitorId = result.visitorId
+      sessionStore.set('ph_visitor_id', visitorId)
+    })
+}
+
+export const _window_ip = function (callback: any) {
+  const xhr = new XMLHttpRequest()
+  xhr.open('GET', 'https://api.ipify.org?format=json', true)
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      const response = JSON.parse(xhr.responseText)
+      const ip = response.ip
+      callback && callback(ip)
+      sessionStore.set('ph_ip', ip)
+    }
+  }
+  xhr.send()
 }
 
 export { win as window, userAgent, logger, document }

@@ -6,6 +6,8 @@
     "event": "$autocapture",
     "properties": {
         "$os": "Mac OS X",
+        "$ip": '192.168.0.1'
+        "$visitor_id": '57n7cco8f5zml7zv'
         "$os_version": "10.15.7",
         "$browser": "Chrome",
         "$device_type": "Desktop",
@@ -22,6 +24,7 @@
         "$lib_version": "0.0.1",
         "$insert_id": "57n7cco8f5zml7zv",
         "$time": 1694144237572,
+        "$stay_time": 1000,
         "distinct_id": "018a21df-5397-7cab-8c5d-138285e2c0b8",
         "$device_id": "018a21df-5397-7cab-8c5d-138285e2c0b8",
         "$autocapture_disabled_server_side": false,
@@ -64,6 +67,8 @@
 - 🍒 event - 本次提交事件类型
 - 🍒 properties - 本次提交数据属性
   - 🍒 $os - 系统类型
+  - 🍒 $ip - 用户ip
+  - 🍒 $visitor_id - 访客标识
   - 🍒 $os_version - 系统版本
   - 🍒 $browser - 浏览器类型
   - 🍒 $device_type - 设备 类型
@@ -76,6 +81,7 @@
   - 🍒 $viewport_width 视口宽度
   - 🍒 $insert_id 插入id # 剥离空数据产生的id
   - 🍒 $time 当前时间
+  - 🍒 $stay_time 停留时间
   - 🍒 distinct_id 清洗数据产生的id
   - 🍒 $device_id 洗数据产生的设备ID
   - 🍒 $autocapture_disabled_server_side - 是否禁用服务器端自动采集

@@ -97,6 +97,7 @@ export interface PostHogConfig {
     featureFlagPayloads?: Record<string, JsonType>
   }
   segment?: any
+  platform_info?: any
 }
 
 export interface OptInOutCapturingOptions {

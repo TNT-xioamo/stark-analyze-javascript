@@ -11,6 +11,7 @@ import {
   _isUndefined,
   _register_event,
   _safewrap_class,
+  _browser_properties,
   document,
   logger,
   userAgent,
@@ -93,6 +94,7 @@ const defaultConfig = (): PostHogConfig => ({
   page_id: 'pageId',
   ui_host: null,
   token: '',
+  platform_info: null,
   autocapture: true,
   rageclick: true,
   page_remain: true,
@@ -440,6 +442,7 @@ export class PostHog {
       window.addEventListener('onpagehide' in self ? 'pagehide' : 'unload', this._handle_unload.bind(this))
     if (this.get_config('page_remain')) {
       window.addEventListener && window.addEventListener('visibilitychange', this._handle_visibility_change.bind(this))
+      window.addEventListener && window.addEventListener('hashchange', this._handle_hash_change.bind(this))
     }
     updateInitComplete('syncCode')()
   }
@@ -456,7 +459,7 @@ export class PostHog {
     this._start_queue_if_opted_in()
 
     if (this.get_config('capture_pageview')) {
-      this.capture('$pageview', { title: document.title }, { send_instantly: true })
+      this.capture('$pageview', { $title: document.title }, { send_instantly: true })
     }
     if (!this.get_config('advanced_disable_decide')) {
       new Decide(this).call()
@@ -530,6 +533,11 @@ export class PostHog {
     } else {
       this.capture('$pageshow')
     }
+  }
+
+  _handle_hash_change(): void {
+    console.log('hash change')
+    // this.capture('$pageview')
   }
 
   _handle_queued_event(url: string, data: Record<string, any>, options?: XHROptions): void {
@@ -772,7 +780,7 @@ export class PostHog {
     const start_timestamp = this.persistence.remove_event_timer(event_name)
     let properties = { ...event_properties }
     properties['token'] = this.get_config('token')
-    properties['$form_type'] = event_name === '$pageview' ? 1 : event_name === '$autocapture' ? 2 : ''
+    properties['$form_type'] = event_name === '$pageview' ? 1 : event_name === '$autocapture' ? 2 : 3
     if (event_name === '$snapshot') {
       const persistenceProps = { ...this.persistence.properties(), ...this.sessionPersistence.properties() }
       properties['distinct_id'] = persistenceProps.distinct_id
@@ -795,7 +803,7 @@ export class PostHog {
     }
 
     if (event_name === '$pageview') {
-      properties['title'] = document.title
+      properties['$title'] = document.title
       properties['$page_id'] = document.getElementById(this.config.page_id)?.innerText
       properties['$event_type'] = 'pageload'
     }
