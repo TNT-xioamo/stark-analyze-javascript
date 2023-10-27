@@ -4,6 +4,7 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { sessionStore } from './storage'
 import { pageViewDataManager } from './page-view-storage'
 import { uuidv7 } from './uuidv7'
+import { elementNode } from 'rrweb-snapshot'
 
 const ArrayProto = Array.prototype
 const ObjProto = Object.prototype
@@ -870,7 +871,7 @@ export const _browser_properties = function () {
     })
 }
 
-export const _window_ip = function (callback: any) {
+export const _window_ip = function (callback?: any) {
   const xhr = new XMLHttpRequest()
   xhr.open('GET', 'https://api.ipify.org?format=json', true)
   xhr.onreadystatechange = () => {
@@ -882,6 +883,17 @@ export const _window_ip = function (callback: any) {
     }
   }
   xhr.send()
+}
+export const _register_event_handler = function (target: any) {
+  return function registerTargetEventHandler(methodName: any) {
+    const originMethod = target[methodName]
+    return function eventHandler(...args: any) {
+      const event = new Event(methodName.toLowerCase())
+      originMethod.apply(target, args)
+      window.dispatchEvent(event)
+      return originMethod
+    }
+  }
 }
 
 export { win as window, userAgent, logger, document }

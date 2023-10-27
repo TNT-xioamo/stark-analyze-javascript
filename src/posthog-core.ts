@@ -12,10 +12,12 @@ import {
   _register_event,
   _safewrap_class,
   _browser_properties,
+  _register_event_handler,
   document,
   logger,
   userAgent,
   window,
+  _window_ip,
 } from './utils'
 import { autocapture } from './autocapture'
 import { PostHogFeatureFlags } from './posthog-featureflags'
@@ -60,7 +62,7 @@ import { ExceptionObserver } from './extensions/exceptions/exception-autocapture
 import { PostHogSurveys, SurveyCallback } from './posthog-surveys'
 import { RateLimiter } from './rate-limiter'
 import { uuidv7 } from './uuidv7'
-import { pageViewDataManager } from './page-view-storage'
+import { pageViewDataManager, _handle_hash_change_sess } from './page-view-storage'
 
 enum InitType {
   INIT_MODULE = 0,
@@ -441,8 +443,11 @@ export class PostHog {
     window.addEventListener &&
       window.addEventListener('onpagehide' in self ? 'pagehide' : 'unload', this._handle_unload.bind(this))
     if (this.get_config('page_remain')) {
+      this._handle_hash_history()
       window.addEventListener && window.addEventListener('visibilitychange', this._handle_visibility_change.bind(this))
-      window.addEventListener && window.addEventListener('hashchange', this._handle_hash_change.bind(this))
+      // window.addEventListener && window.addEventListener('replacestate', this._handle_hash_change.bind(this), false)
+      window.addEventListener && window.addEventListener('hashchange', this._handle_hash_change.bind(this), false)
+      window.addEventListener && window.addEventListener('pushstate', this._handle_hash_change.bind(this), false)
     }
     updateInitComplete('syncCode')()
   }
@@ -535,9 +540,17 @@ export class PostHog {
     }
   }
 
-  _handle_hash_change(): void {
-    console.log('hash change')
+  _handle_hash_change(even: Event): void {
     // this.capture('$pageview')
+    console.log('_handle_hash_change', even)
+    // pageViewDataManager
+    _handle_hash_change_sess()
+  }
+
+  _handle_hash_history(): void {
+    const registerHistoryEventHandler = _register_event_handler(window.history)
+    window.history.pushState = registerHistoryEventHandler('pushState')
+    window.history.replaceState = registerHistoryEventHandler('replaceState')
   }
 
   _handle_queued_event(url: string, data: Record<string, any>, options?: XHROptions): void {

@@ -184,7 +184,7 @@ const autocapture = {
     if (target && shouldCaptureDomEvent(target, e, this.config)) {
       const targetElementList = [target]
       let curEl = target
-      while (curEl.parentNode && !isTag(curEl, 'body') && curEl.children.length < 2) {
+      while (curEl.parentNode && !isTag(curEl, 'body') && targetElementList.length < 2 && curEl.children.length < 2) {
         if (isDocumentFragment(curEl.parentNode)) {
           targetElementList.push((curEl.parentNode as any).host)
           curEl = (curEl.parentNode as any).host
@@ -193,7 +193,6 @@ const autocapture = {
         targetElementList.push(curEl.parentNode as Element)
         curEl = curEl.parentNode as Element
       }
-
       const elementsJson: Properties[] = []
       const autocaptureAugmentProperties: Properties = {}
       let href,

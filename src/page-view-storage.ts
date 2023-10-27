@@ -18,3 +18,10 @@ export const pageViewDataManager = (data: any, event_type: string) => {
     return data
   }
 }
+
+export const _handle_hash_change_sess = function (callback?: () => void, view_time?: string) {
+  const hash = sessionStore.get('pageViewDataManager')
+  if (hash) return callback && callback()
+  const time_ = Date.now()
+  console.log(time_)
+}
