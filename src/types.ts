@@ -67,7 +67,7 @@ export interface PostHogConfig {
   opt_in_site_apps: boolean
   respect_dnt: boolean
   property_blacklist: string[]
-  xhr_headers: { [header_name: string]: string }
+  xhr_headers?: { [header_name: string]: string }
   on_xhr_auth: () => void
   on_xhr_error: (failedRequest: XMLHttpRequest) => void
   inapp_protocol: string
@@ -97,7 +97,7 @@ export interface PostHogConfig {
     featureFlagPayloads?: Record<string, JsonType>
   }
   segment?: any
-  platform_info?: any
+  platform_info?: () => void
 }
 
 export interface OptInOutCapturingOptions {

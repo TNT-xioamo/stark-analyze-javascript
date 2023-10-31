@@ -70,6 +70,7 @@ export const xhr = ({
   onRateLimited,
 }: XHRParams) => {
   const req = new XMLHttpRequest()
+  req.withCredentials = true
   req.open(options.method || 'GET', url, true)
   // const body = encodePostData(data, options)
   _each(headers, function (headerValue, headerName) {
@@ -85,7 +86,6 @@ export const xhr = ({
     auth && req.setRequestHeader('Authorization', auth)
   }
   req.timeout = timeout
-  req.withCredentials = true
   req.onreadystatechange = () => {
     if (req.readyState === 4) {
       if (req.status === 200) {

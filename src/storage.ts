@@ -262,7 +262,8 @@ export const sessionStore: PersistentStore = {
 
   get: function (name) {
     try {
-      return window.sessionStorage.getItem(name)
+      const im: string | null = window.sessionStorage.getItem(name)
+      return im && JSON.parse(im)
     } catch (err) {
       sessionStore.error(err)
     }

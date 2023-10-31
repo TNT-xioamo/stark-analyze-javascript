@@ -7,21 +7,32 @@ export const pageViewDataManager = (data: any, event_type: string) => {
   const cur = sessionStore.get('pageViewDataManager')
 
   if (cur) {
-    const cu_obj = JSON.parse(cur)
-    if (cu_obj.properties?.$current_url !== data.properties?.$current_url) {
+    if (cur.properties?.$current_url !== data.properties?.$current_url) {
       return data
     }
-    const $stay_time = Number(data.properties.$time) - Number(cu_obj.properties.$time)
+    const $stay_time = Number(data.properties.$time) - Number(cur.properties.$time)
     data['properties']['$stay_time'] = $stay_time
     data['properties']['$event_type'] = 'pageleave'
     sessionStore.remove('pageViewDataManager')
     return data
   }
+  return data
 }
-
-export const _handle_hash_change_sess = function (callback?: () => void, view_time?: string) {
-  const hash = sessionStore.get('pageViewDataManager')
-  if (hash) return callback && callback()
-  const time_ = Date.now()
-  console.log(time_)
+export const _page_hash_leave = (even: Event) => {
+  const { currentTarget } = even as any
+  const back: string = currentTarget.history.state.back
+  const current: string = currentTarget.history.state.current
+  const data = {
+    $current: current,
+    $time: Date.now(),
+  }
+  const cur = sessionStore.get('pageViewEnter')
+  if (!cur || cur.$current === back) {
+    return {
+      $leave_url: back,
+      $stay_time: Date.now() - Number(cur.$time),
+    }
+  }
+  sessionStore.set('pageViewEnter', data)
+  return null
 }

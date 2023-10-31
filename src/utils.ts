@@ -827,7 +827,7 @@ export const _info = {
       {
         $current_url: win?.location.href,
         $host: win?.location.host,
-        $pathname: win?.location.pathname,
+        $pathname: win?.location.hash,
         $browser_version: _info.browserVersion(userAgent, navigator.vendor, (win as any).opera),
         $browser_language: _info.browserLanguage(),
         $screen_height: win?.screen.height,

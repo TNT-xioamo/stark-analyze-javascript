@@ -12,12 +12,12 @@ import {
   _register_event,
   _safewrap_class,
   _browser_properties,
+  _window_ip,
   _register_event_handler,
   document,
   logger,
   userAgent,
   window,
-  _window_ip,
 } from './utils'
 import { autocapture } from './autocapture'
 import { PostHogFeatureFlags } from './posthog-featureflags'
@@ -28,7 +28,7 @@ import { WebPerformanceObserver } from './extensions/web-performance'
 import { Decide } from './decide'
 import { Toolbar } from './extensions/toolbar'
 import { clearOptInOut, hasOptedIn, hasOptedOut, optIn, optOut, userOptedOut } from './gdpr-utils'
-import { cookieStore, localStore } from './storage'
+import { cookieStore, localStore, sessionStore } from './storage'
 import { RequestQueue } from './request-queue'
 import { compressData, decideCompression } from './compression'
 import { addParamsToURL, xhr } from './send-request'
@@ -62,7 +62,7 @@ import { ExceptionObserver } from './extensions/exceptions/exception-autocapture
 import { PostHogSurveys, SurveyCallback } from './posthog-surveys'
 import { RateLimiter } from './rate-limiter'
 import { uuidv7 } from './uuidv7'
-import { pageViewDataManager, _handle_hash_change_sess } from './page-view-storage'
+import { pageViewDataManager, _page_hash_leave } from './page-view-storage'
 
 enum InitType {
   INIT_MODULE = 0,
@@ -96,7 +96,7 @@ const defaultConfig = (): PostHogConfig => ({
   page_id: 'pageId',
   ui_host: null,
   token: '',
-  platform_info: null,
+  platform_info: () => void 0,
   autocapture: true,
   rageclick: true,
   page_remain: true,
@@ -139,7 +139,7 @@ const defaultConfig = (): PostHogConfig => ({
   mask_all_element_attributes: false,
   mask_all_text: false,
   mask_bg_img: true,
-  advanced_disable_decide: false,
+  advanced_disable_decide: true,
   advanced_disable_feature_flags: false,
   advanced_disable_feature_flags_on_first_load: false,
   advanced_disable_toolbar_metrics: false,
@@ -464,7 +464,7 @@ export class PostHog {
     this._start_queue_if_opted_in()
 
     if (this.get_config('capture_pageview')) {
-      this.capture('$pageview', { $title: document.title }, { send_instantly: true })
+      this.capture('$pageloaded', { $title: document.title }, { send_instantly: true })
     }
     if (!this.get_config('advanced_disable_decide')) {
       new Decide(this).call()
@@ -541,10 +541,8 @@ export class PostHog {
   }
 
   _handle_hash_change(even: Event): void {
-    // this.capture('$pageview')
-    console.log('_handle_hash_change', even)
-    // pageViewDataManager
-    _handle_hash_change_sess()
+    const par = _page_hash_leave(even)
+    par && this.capture('$pageleave', par)
   }
 
   _handle_hash_history(): void {
@@ -756,13 +754,12 @@ export class PostHog {
       logger.log('stark send', data)
     }
 
-    if (event_name === '$pageview' || event_name === '$pagehidden') {
+    if (event_name === '$pageview' || event_name === '$pagehidden' || event_name === '$pageloaded') {
       data = pageViewDataManager(data, event_name)
     }
     if (event_name === '$pageshow') {
       return pageViewDataManager(data, event_name)
     }
-    console.error(event_name, data)
     // const jsonData = JSON.stringify(data)
 
     const url = this.get_config('api_host') + (options.endpoint || '/e/')
@@ -776,7 +773,6 @@ export class PostHog {
     }
 
     this._invokeCaptureHooks(event_name, data)
-
     return data
   }
 
@@ -1462,6 +1458,7 @@ const add_dom_loaded_handler = function () {
 }
 
 export function init_from_snippet(): void {
+  _browser_properties()
   // 后备文件
   init_type = InitType.INIT_SNIPPET
   if (_isUndefined((window as any).starkhog)) {
@@ -1483,7 +1480,7 @@ export function init_from_snippet(): void {
   ;(posthog_master['init'] as any)()
 
   _each(instances, function (instance) {
-    instance._loaded()
+    _window_ip(instance._loaded())
   })
 
   add_dom_loaded_handler()
