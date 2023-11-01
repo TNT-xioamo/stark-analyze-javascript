@@ -2,9 +2,7 @@ import Config from './config'
 import { Breaker, EventHandler, Properties } from './types'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { sessionStore } from './storage'
-import { pageViewDataManager } from './page-view-storage'
 import { uuidv7 } from './uuidv7'
-import { elementNode } from 'rrweb-snapshot'
 
 const ArrayProto = Array.prototype
 const ObjProto = Object.prototype

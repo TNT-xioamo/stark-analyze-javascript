@@ -789,6 +789,7 @@ export class PostHog {
     const start_timestamp = this.persistence.remove_event_timer(event_name)
     let properties = { ...event_properties }
     properties['token'] = this.get_config('token')
+    properties['$platform_info'] = this.get_config('platform_info') && this.get_config('platform_info')
     properties['$form_type'] = event_name === '$pageview' ? 1 : event_name === '$autocapture' ? 2 : 3
     if (event_name === '$snapshot') {
       const persistenceProps = { ...this.persistence.properties(), ...this.sessionPersistence.properties() }
