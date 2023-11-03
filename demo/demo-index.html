@@ -52,8 +52,8 @@
     e.__SV = 1)
   } (document, window.starkhog || [])
   starkhog.init('adck', {
-    page_remain: false,
-    mask_bg_img: false,
+    page_remain: true,
+    mask_bg_img: true,
     hast_host: '',
     api_host: 'http://test2.easthome.com',
     on_xhr_auth: window.sessionStorage.getItem('token'),
@@ -66,11 +66,11 @@
    * @param {CaptureOptions} options
    * function starkhog.capture('')
   */
-  const btn = document.getElementById('btn')
-  btn.onclick = () => {
-    starkhog.starkhog.capture('$liuxing', { $elents: 18766523342 })
-    console.log(starkhog)
-  }
+  // const btn = document.getElementById('btn')
+  // btn.onclick = () => {
+  //   starkhog.starkhog.capture('$liuxing', { $elents: 18766523342 })
+  //   console.log(starkhog)
+  // }
   </script>
 <style>
   .bg-img {

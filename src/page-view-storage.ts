@@ -27,7 +27,7 @@ export const _page_hash_leave = (even: Event) => {
     $time: Date.now(),
   }
   const cur = sessionStore.get('pageViewEnter')
-  if (!cur || cur.$current === back) {
+  if (cur && cur.$current === back) {
     return {
       $leave_url: back,
       $stay_time: Date.now() - Number(cur.$time),
