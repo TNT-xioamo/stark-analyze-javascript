@@ -139,7 +139,7 @@ const defaultConfig = (): PostHogConfig => ({
   mask_all_element_attributes: false,
   mask_all_text: false,
   mask_bg_img: true,
-  advanced_disable_decide: true,
+  advanced_disable_decide: false,
   advanced_disable_feature_flags: false,
   advanced_disable_feature_flags_on_first_load: false,
   advanced_disable_toolbar_metrics: false,

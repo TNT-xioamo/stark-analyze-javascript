@@ -299,7 +299,6 @@ const autocapture = {
     this._setIsAutocaptureEnabled(instance)
 
     this._initializedTokens.push(token)
-    console.log('afterDecideResponse', response['config'])
     this._customProperties = response['custom_properties']
     this._addDomEventHandlers(instance)
     // instance['__autocapture'] = false

@@ -27,14 +27,15 @@ export class Decide {
 
     // const encoded_data = _base64Encode(json_data)
     const encoded_data = JSON.parse(json_data)
-    console.error('encoded_data', encoded_data)
-    this.instance._send_request(
-      // 请求地址
-      `${this.instance.get_config('api_host')}/decide/?v=3`,
-      { data: encoded_data, verbose: true },
-      { method: 'POST' },
-      (response) => this.parseDecideResponse(response as DecideResponse)
-    )
+    const response = { autocapture_opt_out: true } as DecideResponse
+    autocapture.afterDecideResponse(response, this.instance)
+    // this.instance._send_request(
+    //   // 请求地址
+    //   `${this.instance.get_config('api_host')}/decide/?v=3`,
+    //   { data: encoded_data, verbose: true },
+    //   { method: 'POST' },
+    //   (response) => this.parseDecideResponse(response as DecideResponse)
+    // )
   }
 
   parseDecideResponse(response: DecideResponse): void {
