@@ -254,7 +254,6 @@ export function isAngularStyleAttr(attributeName: string): boolean {
 export function getDirectAndNestedSpanText(target: Element): string {
   let text = getSafeText(target)
   text = `${text} ${getNestedSpanText(target)}`.trim()
-  console.log('getDirectAndNestedSpanText', target)
   return shouldCaptureValue(text) ? text : ''
 }
 

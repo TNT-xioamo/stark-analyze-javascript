@@ -318,7 +318,6 @@ export class PostHog {
    * @param {String} [name]
    */
   init(token: string, config?: Partial<PostHogConfig>, name?: string): PostHog | void {
-    console.log(18729321077)
     if (_isUndefined(name)) return
     if (name === PRIMARY_INSTANCE_NAME) return
 

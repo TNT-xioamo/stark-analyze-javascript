@@ -35,7 +35,7 @@
         "$elements": [
             {
                 "tag_name": "img",
-                "$el_text": "",
+                "el_text": "",
                 "attr__width": "300",
                 "attr__src": "https://static001.geekbang.org/resource/image/73/78/7333f477e1919435a9bb7bbe48eda078.jpg?x-oss-process=image/resize,m_fill,h_800,w_1636",
                 "attr__alt": "",
@@ -45,7 +45,7 @@
             },
             {
                 "tag_name": "div",
-                "$el_text": "",
+                "el_text": "",
                 "attr__id": "root",
                 "nth_child": 1,
                 "nth_of_type": 1

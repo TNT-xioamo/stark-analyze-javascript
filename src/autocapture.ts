@@ -82,9 +82,9 @@ const autocapture = {
     }
     if (autocaptureCompatibleElements.indexOf(tag_name) > -1 && !maskText) {
       if (tag_name.toLowerCase() === 'a' || tag_name.toLowerCase() === 'button') {
-        props['$el_text'] = getDirectAndNestedSpanText(elem)
+        props['el_text'] = getDirectAndNestedSpanText(elem)
       } else {
-        props['$el_text'] = getSafeText(elem)
+        props['el_text'] = getSafeText(elem)
       }
     }
 
@@ -224,9 +224,9 @@ const autocapture = {
 
       if (!instance.get_config('mask_all_text')) {
         if (target.tagName.toLowerCase() === 'a' || target.tagName.toLowerCase() === 'button') {
-          elementsJson[0]['$el_text'] = getDirectAndNestedSpanText(target)
+          elementsJson[0]['el_text'] = getDirectAndNestedSpanText(target)
         } else {
-          elementsJson[0]['$el_text'] = getSafeText(target)
+          elementsJson[0]['el_text'] = getSafeText(target)
         }
         if (instance.get_config('mask_bg_img') && target.tagName.toLowerCase() === 'div') {
           getSafeImg(target) && (elementsJson[0]['$el_bgc'] = getSafeImg(target))
