@@ -30,7 +30,6 @@ export function getSafeText(el: Element): string {
   // console.log('getSafeText', el.childNodes)
   if (shouldCaptureElement(el) && isSensitiveElement(el) && isInteractElement(el)) {
     const v = el as HTMLInputElement
-    console.error(v.value)
     elText += _trim(v.value)
       .split(/(\s+)/)
       .filter(shouldCaptureValue)

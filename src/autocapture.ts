@@ -97,7 +97,12 @@ const autocapture = {
     _each(elem.attributes, function (attr: Attr) {
       if (isSensitiveElement(elem) && ['name', 'id', 'class'].indexOf(attr.name) === -1) return
 
-      if (!maskInputs && shouldCaptureValue(attr.value) && !isAngularStyleAttr(attr.name)) {
+      if (
+        !maskInputs &&
+        shouldCaptureValue(attr.value) &&
+        !isAngularStyleAttr(attr.name) &&
+        !attr.name.includes('style')
+      ) {
         props['attr__' + attr.name] = attr.value
       }
     })
